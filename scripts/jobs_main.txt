@@ -1,0 +1,97 @@
+# Experiment plan. Order = priority.
+rh_stpt_teacher_s0 | --data radhar --model stpt_teacher --seed 0
+rh_stpt_teacher_s1 | --data radhar --model stpt_teacher --seed 1
+rh_stpt_teacher_s2 | --data radhar --model stpt_teacher --seed 2
+rh_stpt_lite_s0 | --data radhar --model stpt_lite --seed 0
+rh_stpt_lite_kd_s0 | --data radhar --model stpt_lite --seed 0 --teacher results/runs/rh_stpt_teacher_s0 | rh_stpt_teacher_s0
+rh_stpt_lite_kd_robust_s0 | --data radhar --model stpt_lite --seed 0 --robust 1 --teacher results/runs/rh_stpt_teacher_s0 | rh_stpt_teacher_s0
+rh_stpt_tiny_kd_s0 | --data radhar --model stpt_tiny --seed 0 --teacher results/runs/rh_stpt_teacher_s0 | rh_stpt_teacher_s0
+rh_pointnet_s0 | --data radhar --model pointnet --seed 0
+rh_pointnet_lstm_s0 | --data radhar --model pointnet_lstm --seed 0
+rh_pointnet_robust_s0 | --data radhar --model pointnet --seed 0 --robust 1
+rh_stpt_lite_s1 | --data radhar --model stpt_lite --seed 1
+rh_stpt_lite_kd_s1 | --data radhar --model stpt_lite --seed 1 --teacher results/runs/rh_stpt_teacher_s1 | rh_stpt_teacher_s1
+rh_stpt_lite_kd_robust_s1 | --data radhar --model stpt_lite --seed 1 --robust 1 --teacher results/runs/rh_stpt_teacher_s1 | rh_stpt_teacher_s1
+rh_stpt_tiny_kd_s1 | --data radhar --model stpt_tiny --seed 1 --teacher results/runs/rh_stpt_teacher_s1 | rh_stpt_teacher_s1
+rh_pointnet_s1 | --data radhar --model pointnet --seed 1
+rh_pointnet_lstm_s1 | --data radhar --model pointnet_lstm --seed 1
+rh_pointnet_robust_s1 | --data radhar --model pointnet --seed 1 --robust 1
+rh_stpt_lite_s2 | --data radhar --model stpt_lite --seed 2
+rh_stpt_lite_kd_s2 | --data radhar --model stpt_lite --seed 2 --teacher results/runs/rh_stpt_teacher_s2 | rh_stpt_teacher_s2
+rh_stpt_lite_kd_robust_s2 | --data radhar --model stpt_lite --seed 2 --robust 1 --teacher results/runs/rh_stpt_teacher_s2 | rh_stpt_teacher_s2
+rh_stpt_tiny_kd_s2 | --data radhar --model stpt_tiny --seed 2 --teacher results/runs/rh_stpt_teacher_s2 | rh_stpt_teacher_s2
+rh_pointnet_s2 | --data radhar --model pointnet --seed 2
+rh_pointnet_lstm_s2 | --data radhar --model pointnet_lstm --seed 2
+rh_pointnet_robust_s2 | --data radhar --model pointnet --seed 2 --robust 1
+mp_stpt_teacher_s0 | --data mp_subject --model stpt_teacher --seed 0 --epochs 30 
+mp_stpt_teacher_s1 | --data mp_subject --model stpt_teacher --seed 1 --epochs 30 
+mp_stpt_teacher_s2 | --data mp_subject --model stpt_teacher --seed 2 --epochs 30 
+mp_stpt_lite_s0 | --data mp_subject --model stpt_lite --seed 0 --epochs 30 
+mp_stpt_lite_kd_s0 | --data mp_subject --model stpt_lite --seed 0 --teacher results/runs/mp_stpt_teacher_s0 --epochs 30 | mp_stpt_teacher_s0
+mp_stpt_lite_kd_robust_s0 | --data mp_subject --model stpt_lite --seed 0 --robust 1 --teacher results/runs/mp_stpt_teacher_s0 --epochs 30 | mp_stpt_teacher_s0
+mp_pointnet_s0 | --data mp_subject --model pointnet --seed 0 --epochs 30 
+mp_pointnet_lstm_s0 | --data mp_subject --model pointnet_lstm --seed 0 --epochs 30 
+mp_pointnet_robust_s0 | --data mp_subject --model pointnet --seed 0 --robust 1 --epochs 30 
+mp_pointnet2_s0 | --data mp_subject --model pointnet2 --seed 0 --epochs 30 
+mp_stpt_lite_s1 | --data mp_subject --model stpt_lite --seed 1 --epochs 30 
+mp_stpt_lite_kd_s1 | --data mp_subject --model stpt_lite --seed 1 --teacher results/runs/mp_stpt_teacher_s1 --epochs 30 | mp_stpt_teacher_s1
+mp_stpt_lite_kd_robust_s1 | --data mp_subject --model stpt_lite --seed 1 --robust 1 --teacher results/runs/mp_stpt_teacher_s1 --epochs 30 | mp_stpt_teacher_s1
+mp_pointnet_s1 | --data mp_subject --model pointnet --seed 1 --epochs 30 
+mp_pointnet_lstm_s1 | --data mp_subject --model pointnet_lstm --seed 1 --epochs 30 
+mp_pointnet_robust_s1 | --data mp_subject --model pointnet --seed 1 --robust 1 --epochs 30 
+mp_pointnet2_s1 | --data mp_subject --model pointnet2 --seed 1 --epochs 30 
+mp_stpt_lite_s2 | --data mp_subject --model stpt_lite --seed 2 --epochs 30 
+mp_stpt_lite_kd_s2 | --data mp_subject --model stpt_lite --seed 2 --teacher results/runs/mp_stpt_teacher_s2 --epochs 30 | mp_stpt_teacher_s2
+mp_stpt_lite_kd_robust_s2 | --data mp_subject --model stpt_lite --seed 2 --robust 1 --teacher results/runs/mp_stpt_teacher_s2 --epochs 30 | mp_stpt_teacher_s2
+mp_pointnet_s2 | --data mp_subject --model pointnet --seed 2 --epochs 30 
+mp_pointnet_lstm_s2 | --data mp_subject --model pointnet_lstm --seed 2 --epochs 30 
+mp_pointnet_robust_s2 | --data mp_subject --model pointnet --seed 2 --robust 1 --epochs 30 
+mp_pointnet2_s2 | --data mp_subject --model pointnet2 --seed 2 --epochs 30 
+rh_pointnet2_s0 | --data radhar --model pointnet2 --seed 0
+rh_pointtransformer_s0 | --data radhar --model pointtransformer --seed 0
+rh_dgcnn_s0 | --data radhar --model dgcnn --seed 0
+rh_voxel_tdcnn_s0 | --data radhar --model voxel_tdcnn --seed 0
+rh_pointnet2_s1 | --data radhar --model pointnet2 --seed 1
+rh_pointtransformer_s1 | --data radhar --model pointtransformer --seed 1
+rh_voxel_tdcnn_s1 | --data radhar --model voxel_tdcnn --seed 1
+rh_pointnet2_s2 | --data radhar --model pointnet2 --seed 2
+rh_pointtransformer_s2 | --data radhar --model pointtransformer --seed 2
+rh_abl_noattn_s0 | --data radhar --model stpt_lite --seed 0 --no_attn
+rh_abl_nomotion_s0 | --data radhar --model stpt_lite --seed 0 --no_motion
+rh_abl_notemporal_s0 | --data radhar --model stpt_lite --seed 0 --no_temporal
+rh_abl_xyz_s0 | --data radhar --model stpt_lite --seed 0 --feats xyz
+rh_abl_nogate_s0 | --data radhar --model stpt_lite --seed 0 --gate 0
+rh_abl_augnone_s0 | --data radhar --model stpt_lite --seed 0 --aug none
+rh_abl_augnojitter_s0 | --data radhar --model stpt_lite --seed 0 --aug nojitter
+rh_abl_noattn_s1 | --data radhar --model stpt_lite --seed 1 --no_attn
+rh_abl_nomotion_s1 | --data radhar --model stpt_lite --seed 1 --no_motion
+rh_abl_notemporal_s1 | --data radhar --model stpt_lite --seed 1 --no_temporal
+rh_abl_xyz_s1 | --data radhar --model stpt_lite --seed 1 --feats xyz
+rh_abl_nogate_s1 | --data radhar --model stpt_lite --seed 1 --gate 0
+rh_abl_augnone_s1 | --data radhar --model stpt_lite --seed 1 --aug none
+rh_abl_augnojitter_s1 | --data radhar --model stpt_lite --seed 1 --aug nojitter
+mpo_official_stpt_lite_s0 | --data mp_official --model stpt_lite --seed 0 --epochs 30 
+mpo_official_pointnet_s0 | --data mp_official --model pointnet --seed 0 --epochs 30 
+mpo_random_stpt_lite_s0 | --data mp_random --model stpt_lite --seed 0 --epochs 30 
+mpo_random_pointnet_s0 | --data mp_random --model pointnet --seed 0 --epochs 30 
+mpo_official_stpt_lite_s1 | --data mp_official --model stpt_lite --seed 1 --epochs 30 
+mpo_random_stpt_lite_s1 | --data mp_random --model stpt_lite --seed 1 --epochs 30 
+rh_xyz_scratch_f0.1_s0 | --data radhar --model stpt_lite --seed 0 --feats xyz --label_frac 0.1
+rh_xyz_scratch_f0.25_s0 | --data radhar --model stpt_lite --seed 0 --feats xyz --label_frac 0.25
+rh_xyz_mpinit_f0.1_s0 | --data radhar --model stpt_lite --seed 0 --feats xyz --label_frac 0.1 --init results/runs/mp_stpt_lite_s0 | mp_stpt_lite_s0
+rh_xyz_mpinit_f0.25_s0 | --data radhar --model stpt_lite --seed 0 --feats xyz --label_frac 0.25 --init results/runs/mp_stpt_lite_s0 | mp_stpt_lite_s0
+rh_xyz_mpinit_f1.0_s0 | --data radhar --model stpt_lite --seed 0 --feats xyz --label_frac 1.0 --init results/runs/mp_stpt_lite_s0 | mp_stpt_lite_s0
+rh_xyz_scratch_f0.1_s1 | --data radhar --model stpt_lite --seed 1 --feats xyz --label_frac 0.1
+rh_xyz_scratch_f0.25_s1 | --data radhar --model stpt_lite --seed 1 --feats xyz --label_frac 0.25
+rh_xyz_mpinit_f0.1_s1 | --data radhar --model stpt_lite --seed 1 --feats xyz --label_frac 0.1 --init results/runs/mp_stpt_lite_s1 | mp_stpt_lite_s1
+rh_xyz_mpinit_f0.25_s1 | --data radhar --model stpt_lite --seed 1 --feats xyz --label_frac 0.25 --init results/runs/mp_stpt_lite_s1 | mp_stpt_lite_s1
+rh_xyz_mpinit_f1.0_s1 | --data radhar --model stpt_lite --seed 1 --feats xyz --label_frac 1.0 --init results/runs/mp_stpt_lite_s1 | mp_stpt_lite_s1
+mp_abl_noattn_s0 | --data mp_subject --model stpt_lite --seed 0 --epochs 30 --no_attn
+mp_abl_nomotion_s0 | --data mp_subject --model stpt_lite --seed 0 --epochs 30 --no_motion
+mp_abl_notemporal_s0 | --data mp_subject --model stpt_lite --seed 0 --epochs 30 --no_temporal
+mp_abl_noattn_s1 | --data mp_subject --model stpt_lite --seed 1 --epochs 30 --no_attn
+mp_abl_nomotion_s1 | --data mp_subject --model stpt_lite --seed 1 --epochs 30 --no_motion
+mp_abl_notemporal_s1 | --data mp_subject --model stpt_lite --seed 1 --epochs 30 --no_temporal
+mp_abl_noattn_s2 | --data mp_subject --model stpt_lite --seed 2 --epochs 30 --no_attn
+mp_abl_nomotion_s2 | --data mp_subject --model stpt_lite --seed 2 --epochs 30 --no_motion
+mp_abl_notemporal_s2 | --data mp_subject --model stpt_lite --seed 2 --epochs 30 --no_temporal

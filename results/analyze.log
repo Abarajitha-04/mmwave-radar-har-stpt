@@ -1,0 +1,111 @@
+
+=== radhar ===
+                                 model  n  acc_mean  acc_std  f1_mean  f1_std   top3  params  mflops  lat_ms  int8_acc  best_epoch  train_min
+0         Voxel TD-CNN+BiLSTM [RadHAR]  2     95.01     0.16    95.03    0.17  99.68   45861  180.49    6.60     94.99       12.50      46.98
+1                             PointNet  3     96.31     0.66    96.36    0.64  99.73   76229   31.82    0.74     96.28        5.67       2.61
+2                      PointNet+BiLSTM  3     96.14     0.23    96.16    0.21  99.57  109125    6.59    0.83     96.13       10.33       2.05
+3                     PointNet++ (SSG)  3     97.34     0.18    97.37    0.19  99.66  413381  133.09    8.44     97.32       10.67      18.68
+4                                DGCNN  1     95.85     0.00    95.89    0.00  99.86  422405  137.89    6.95     95.90        2.00      15.78
+5                    Point Transformer  3     97.01     0.25    97.04    0.24  99.86  335237  264.44    7.98     97.00        8.33      32.10
+6                 STPT-Large (teacher)  3     96.44     1.43    96.48    1.42  99.54  725262  139.53    3.59     96.47        9.00      12.26
+7                            STPT-Lite  3     96.22     1.43    96.27    1.41  99.67  117546   36.60    2.14     96.20        9.67       5.74
+8                       STPT-Lite + KD  3     96.04     0.78    96.08    0.76  99.57  117546   36.60    2.08     96.05        8.33       8.67
+9                       STPT-Tiny + KD  3     96.86     0.17    96.90    0.16  99.66   30682   12.11    1.92     96.88       10.67       8.39
+10  STPT-Lite + KD + robust (proposed)  3     96.83     0.69    96.88    0.68  99.71  117546   36.60    2.58     96.82        9.33      10.39
+11    PointNet + noise-robust training  3     97.38     0.11    97.40    0.11  99.64   76229   31.82    0.73     97.40        9.33       3.39
+
+=== milipoint ===
+                                model  n  acc_mean  acc_std  f1_mean  f1_std   top3  params  mflops  lat_ms  int8_acc  best_epoch  train_min
+0                            PointNet  3     32.57     4.59    29.72    4.50  59.50   81905   31.83    0.74     32.53       27.00       7.28
+1                     PointNet+BiLSTM  3     28.11     4.06    28.09    4.66  56.08  114801    6.60    0.74     28.26       27.33       3.88
+2                    PointNet++ (SSG)  3      8.07     5.47     5.12    5.76  21.44  424689  133.11    7.94      8.10       21.67      30.12
+3                STPT-Large (teacher)  3     50.39     1.39    50.84    2.11  75.81  730938  139.54    3.65     50.37       25.33      25.02
+4                           STPT-Lite  3     45.79     6.30    45.95    7.05  73.90  120406   36.60    2.60     45.80       23.67      12.61
+5                      STPT-Lite + KD  3     48.55     4.35    47.62    6.08  76.35  120406   36.60    2.07     48.48       23.00      19.75
+6  STPT-Lite + KD + robust (proposed)  3     49.56     1.98    48.80    1.68  78.03  120406   36.60    2.00     49.59       25.67      22.09
+7    PointNet + noise-robust training  3     18.66     8.83    15.67    8.98  40.90   81905   31.83    0.78     18.68       28.00       7.39
+
+=== ablation ===
+               group  n  acc_mean  acc_std  f1_mean  f1_std  params
+0     rh_abl_augnone  1     96.30     0.00    96.31    0.00  117546
+1      rh_abl_noattn  2     96.90     0.18    96.94    0.17   83942
+2      rh_abl_nogate  1     97.90     0.00    97.93    0.00  117546
+3    rh_abl_nomotion  1     97.56     0.00    97.59    0.00  115082
+4  rh_abl_notemporal  1     96.27     0.00    96.31    0.00   50602
+5         rh_abl_xyz  1     95.23     0.00    95.25    0.00  117546
+6       rh_stpt_lite  3     96.22     1.43    96.27    1.41  117546
+7       mp_stpt_lite  3     45.79     6.30    45.95    7.05  120406
+
+=== transfer ===
+          group  n  acc_mean  acc_std  f1_mean  f1_std
+0    rh_abl_xyz  1     95.23      0.0    95.25    0.00
+1  mp_stpt_lite  3     45.79      6.3    45.95    7.05
+
+=== protocol ===
+          group  n  acc_mean  acc_std  f1_mean   top3
+0  mp_stpt_lite  3     45.79     6.30    45.95  73.90
+1   mp_pointnet  3     32.57     4.59    29.72  59.50
+2  mp_pointnet2  3      8.07     5.47     5.12  21.44
+
+radhar seed 0: ref 97.08 CI [96.52 97.62]
+   vs voxel_tdcnn        acc 94.89 b/c 117/39 p_holm 2.99e-09
+   vs pointnet           acc 97.00 b/c 47/44 p_holm 1.00e+00
+   vs pointnet_lstm      acc 95.88 b/c 62/19 p_holm 1.60e-05
+   vs pointnet2          acc 97.53 b/c 33/49 p_holm 5.82e-01
+   vs dgcnn              acc 95.85 b/c 83/39 p_holm 6.73e-04
+   vs pointtransformer   acc 96.75 b/c 56/44 p_holm 1.00e+00
+   vs stpt_teacher       acc 96.49 b/c 55/34 p_holm 2.34e-01
+   vs stpt_lite          acc 94.61 b/c 102/14 p_holm 1.24e-16
+   vs stpt_lite_kd       acc 96.94 b/c 34/29 p_holm 1.00e+00
+   vs stpt_tiny_kd       acc 97.03 b/c 31/29 p_holm 1.00e+00
+   vs pointnet_robust    acc 97.45 b/c 27/40 p_holm 7.10e-01
+
+radhar seed 1: ref 96.04 CI [95.4  96.66]
+   vs voxel_tdcnn        acc 95.12 b/c 96/63 p_holm 4.37e-02
+   vs pointnet           acc 96.24 b/c 47/54 p_holm 7.64e-01
+   vs pointnet_lstm      acc 96.33 b/c 48/58 p_holm 7.64e-01
+   vs pointnet2          acc 97.31 b/c 33/78 p_holm 1.86e-04
+   vs pointtransformer   acc 97.03 b/c 34/69 p_holm 4.67e-03
+   vs stpt_teacher       acc 94.98 b/c 79/41 p_holm 4.67e-03
+   vs stpt_lite          acc 97.34 b/c 30/76 p_holm 9.10e-05
+   vs stpt_lite_kd       acc 95.65 b/c 64/50 p_holm 6.70e-01
+   vs stpt_tiny_kd       acc 96.86 b/c 28/57 p_holm 1.10e-02
+   vs pointnet_robust    acc 97.25 b/c 25/68 p_holm 9.10e-05
+
+radhar seed 2: ref 97.36 CI [96.83 97.87]
+   vs pointnet           acc 95.68 b/c 78/18 p_holm 3.56e-09
+   vs pointnet_lstm      acc 96.21 b/c 64/23 p_holm 8.86e-05
+   vs pointnet2          acc 97.17 b/c 47/40 p_holm 1.00e+00
+   vs pointtransformer   acc 97.25 b/c 43/39 p_holm 1.00e+00
+   vs stpt_teacher       acc 97.84 b/c 29/46 p_holm 2.56e-01
+   vs stpt_lite          acc 96.72 b/c 58/35 p_holm 1.10e-01
+   vs stpt_lite_kd       acc 95.54 b/c 84/19 p_holm 5.59e-10
+   vs stpt_tiny_kd       acc 96.69 b/c 56/32 p_holm 8.25e-02
+   vs pointnet_robust    acc 97.45 b/c 36/39 p_holm 1.00e+00
+
+milipoint seed 0: ref 49.97 CI [48.33 51.58]
+   vs pointnet           acc 27.36 b/c 1025/240 p_holm 4.69e-115
+   vs pointnet_lstm      acc 28.92 b/c 935/204 p_holm 1.36e-111
+   vs pointnet2          acc 14.20 b/c 1418/176 p_holm 1.89e-240
+   vs stpt_teacher       acc 48.79 b/c 294/253 p_holm 9.95e-02
+   vs stpt_lite          acc 48.53 b/c 337/287 p_holm 9.95e-02
+   vs stpt_lite_kd       acc 44.12 b/c 383/180 p_holm 2.23e-17
+   vs pointnet_robust    acc 11.55 b/c 1471/137 p_holm 1.27e-281
+
+milipoint seed 1: ref 51.30 CI [49.68 52.91]
+   vs pointnet           acc 36.06 b/c 813/284 p_holm 5.74e-59
+   vs pointnet_lstm      acc 31.71 b/c 878/198 p_holm 6.32e-102
+   vs pointnet2          acc 6.37 b/c 1660/100 p_holm 0.00e+00
+   vs stpt_teacher       acc 51.07 b/c 313/305 p_holm 7.78e-01
+   vs stpt_lite          acc 50.26 b/c 339/303 p_holm 3.34e-01
+   vs stpt_lite_kd       acc 52.82 b/c 234/287 p_holm 6.79e-02
+   vs pointnet_robust    acc 28.54 b/c 995/205 p_holm 5.04e-124
+
+milipoint seed 2: ref 47.41 CI [45.77 48.96]
+   vs pointnet           acc 34.27 b/c 739/283 p_holm 6.02e-47
+   vs pointnet_lstm      acc 23.70 b/c 1044/221 p_holm 1.91e-127
+   vs pointnet2          acc 3.66 b/c 1569/50 p_holm 0.00e+00
+   vs stpt_teacher       acc 51.32 b/c 239/375 p_holm 9.01e-08
+   vs stpt_lite          acc 38.59 b/c 595/289 p_holm 1.09e-24
+   vs stpt_lite_kd       acc 48.70 b/c 244/289 p_holm 5.66e-02
+   vs pointnet_robust    acc 15.90 b/c 1266/172 p_holm 2.74e-205

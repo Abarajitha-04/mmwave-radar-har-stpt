@@ -1,0 +1,13 @@
+mp_stpt_lite_kd_s0 clean 44.12 combined3 11.61
+mp_stpt_lite_kd_s1 clean 52.82 combined3 14.72
+mp_stpt_lite_kd_s2 clean 48.7 combined3 13.91
+mp_stpt_lite_kd_robust_s0 clean 49.97 combined3 15.52
+mp_stpt_lite_kd_robust_s1 clean 51.3 combined3 16.65
+mp_stpt_lite_kd_robust_s2 clean 47.41 combined3 15.26
+mp_pointnet_s0 clean 27.36 combined3 7.86
+mp_pointnet_s1 clean 36.06 combined3 10.46
+mp_pointnet_s2 clean 34.27 combined3 10.34
+mp_pointnet_robust_s0 clean 11.55 combined3 7.92
+mp_pointnet_robust_s1 clean 28.54 combined3 11.58
+mp_pointnet_robust_s2 clean 15.9 combined3 8.38
+mp_pointnet2_s0 clean 14.2 combined3 5.13

@@ -1,0 +1,39 @@
+{
+ "source_run": "results/runs/rh_stpt_lite_kd_robust_s0",
+ "selected_by": "validation macro-F1 among seeds 0-2",
+ "classes": [
+  "boxing",
+  "jack",
+  "jump",
+  "squats",
+  "walk"
+ ],
+ "model_args": {
+  "model": "stpt_lite",
+  "kwargs": {
+   "G": 12,
+   "use_attn": true,
+   "use_motion": true,
+   "use_temporal": true
+  }
+ },
+ "preprocessing": {
+  "dataset": "radhar",
+  "win": 60,
+  "win_s": 2.0,
+  "stride": 10,
+  "G": 12,
+  "P": 32,
+  "feats": "full",
+  "roi": true,
+  "center": true,
+  "gate": 1.2,
+  "int_stats": [
+   28.48161506652832,
+   3.9005091190338135
+  ],
+  "fps": 30
+ },
+ "test_accuracy": 0.9708274894810659,
+ "params": 117546
+}

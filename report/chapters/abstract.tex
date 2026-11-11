@@ -1,0 +1,17 @@
+This report documents the complete development of a privacy-preserving human
+activity recognition system based on mmWave radar point clouds, carried out for
+the 23I006 Deep Learning mini project. It records every important decision, the
+alternatives considered, the failures met and how each was diagnosed, corrected
+and verified. Radar returns are pre-processed with an antenna-return filter,
+Doppler-based person centring and spatial gating, which remove about half of all
+returns as static clutter. The proposed STPT-Lite applies self-attention within
+short temporal segments and across segment tokens and adds an explicit motion
+descriptor. It is distilled from a larger teacher, trained with noise-robust augmentation and stored with INT8 weights
+(\oursParamsK\,K parameters, \oursMflops\,MFLOPs, \oursLat\,ms per window on one
+CPU thread). Under leakage-free protocols with three seeds, it reaches
+\rastptlitekdrobustAcc\% on RadHAR and \mistptlitekdrobustAcc\% top-1 on 49 MiliPoint
+actions of unseen people, against \mipointnetAcc\% for the best re-implemented baseline. An automated
+audit shows that random window splits place most test frames inside training
+windows, which explains the large spread of published results. The report also
+covers the robustness study, ablations, cross-dataset transfer, explainability,
+the working demonstration, testing and the remaining limitations.

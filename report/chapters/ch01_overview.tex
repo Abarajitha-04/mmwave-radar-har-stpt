@@ -1,0 +1,78 @@
+\chapter{Project Overview}
+
+\section{Background}
+Human activity recognition (HAR) at home supports elderly-care monitoring,
+rehabilitation and smart-home automation. Camera-based HAR is accurate, but it
+records identifiable images of people in private spaces, it fails in darkness,
+and many users do not accept it. Wearable sensors avoid images but must be worn
+and charged. Single-chip frequency-modulated continuous-wave (FMCW) mmWave radars
+operating at 60--81\,GHz (e.g.\ the Texas Instruments IWR1443/IWR1843 used by
+both datasets in this project) sense through darkness and light clothing. For
+each frame they output a small \emph{point cloud}: a set of detections with a 3-D
+position, a radial (Doppler) velocity and an intensity. The output contains no
+image and no visual identity, so the sensing is privacy-preserving by
+construction.
+
+\section{Problem statement}
+Given a short sequence of radar point-cloud frames, the task is to classify the
+human activity being performed, accurately and at a computational cost that
+suits an edge device. The difficulty has four sources:
+\begin{itemize}[nosep]
+\item \textbf{Sparsity}: a frame holds only about 6 (MiliPoint) to 21 (RadHAR) returns
+  (measured in Chapter~\ref{ch:data}).
+\item \textbf{Noise}: many returns are antenna self-reflections, static clutter
+  or multipath rather than the person. Our analysis shows that about half of all
+  RadHAR returns are not on the person (Chapter~\ref{ch:pre}).
+\item \textbf{Temporal nature}: the activity shows up in how the sparse cloud moves
+  over time, not in the shape of a single frame.
+\item \textbf{Evaluation leakage}: samples are overlapping windows cut from long
+  recordings, so careless splitting puts near-identical samples in both the
+  training and the test data (Chapter~\ref{ch:leak}).
+\end{itemize}
+
+\section{Motivation}
+Published results on the same public radar datasets vary enormously. On
+MiliPoint's 49-action task, the dataset authors report at most 34.45\% top-1
+\cite{cui2023milipoint}, while a 2025 graph-network paper reports 98.25\% under a
+random 80/10/10 split \cite{zakka2025makgcn}. A model that is accurate only
+because of leakage is useless in a real home. This project therefore aims to
+show what a lightweight model achieves under \emph{honest} evaluation and how
+robust it is to realistic radar disturbances.
+
+\section{Objectives}
+\begin{enumerate}[nosep]
+\item Build a reproducible pipeline for two public mmWave point-cloud datasets
+  (MiliPoint as the primary dataset, RadHAR as the secondary one).
+\item Design radar-specific pre-processing that removes non-human returns without
+  removing human motion.
+\item Develop a lightweight point-transformer classifier suitable for edge
+  deployment and compare it with established baselines (PointNet, PointNet++,
+  Point Transformer, DGCNN, PointNet+BiLSTM and the RadHAR voxel CNN-LSTM).
+\item Evaluate under leakage-free protocols with three seeds, paired significance
+  tests, ablations and a dedicated noise-robustness study.
+\item Deliver a saved model, an inference script and a working interactive
+  demonstration, together with a research paper, this report and a presentation.
+\end{enumerate}
+
+\section{Scope}
+In scope: activity classification of single-person radar point-cloud sequences
+using the label sets of RadHAR (5 activities) and MiliPoint (49 actions);
+CPU-based efficiency measurement; robustness to synthetic perturbations of
+recorded data.
+Out of scope: fall detection (neither dataset has fall labels), multi-person
+scenes, on-device hardware deployment, and clinical validation. No claim of
+clinical suitability is made.
+
+\section{Expected outcomes}
+A trained and saved model with measured accuracy on held-out data; quantified
+robustness under controlled noise; an automated leakage audit; a demonstration
+application that runs the real model; and complete documentation.
+
+\section{System requirements}
+\begin{itemize}[nosep]
+\item Python $\geq$ 3.10, PyTorch $\geq$ 2.1 (developed with 2.15), NumPy, SciPy,
+  scikit-learn, pandas, Matplotlib, PyYAML; Streamlit and Plotly for the demo.
+\item No GPU required. All experiments in this report ran on a 2-core CPU with
+  7\,GB RAM (Section~\ref{sec:env}).
+\item Disk: about 1\,GB for the RadHAR raw data and 0.4\,GB for MiliPoint.
+\end{itemize}

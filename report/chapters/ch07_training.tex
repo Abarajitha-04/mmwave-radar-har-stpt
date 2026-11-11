@@ -1,0 +1,73 @@
+\chapter{Training and Optimisation}
+
+\section{Environment}
+\label{sec:env}
+\begin{table}[h]
+\centering
+\caption{Computational environment.}
+\label{tab:env}
+\small
+\begin{tabular}{L{4cm}L{10cm}}
+\toprule
+Hardware & 2 vCPU (Intel Xeon), 7\,GB RAM, no GPU (Linux cloud workspace) \\
+Software & Python 3.13, PyTorch 2.15, NumPy 2.5, scikit-learn 1.9, SciPy 1.18, pandas 3.0, Matplotlib 3.11, Streamlit 1.67, Plotly 7.1 \\
+Parallelism & 2 training jobs in parallel, 1 thread each (\texttt{scripts/runner.py}) \\
+Latency measurement & batch 1, single thread, median of 200 runs after 20 warm-up runs \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Hyper-parameters and their justification}
+All hyper-parameters are in \texttt{configs/default.yaml}. They were fixed
+\emph{before} any test-set evaluation and are identical for every model, so the
+comparison is fair. Table~\ref{tab:hp} lists them.
+
+\begin{longtable}{L{3.2cm}L{3.2cm}L{8.0cm}}
+\caption{Training configuration.}\label{tab:hp}\\
+\toprule
+Setting & Value & Reason \\
+\midrule\endfirsthead
+\toprule Setting & Value & Reason \\ \midrule\endhead
+Optimiser & AdamW \cite{loshchilov2019adamw} & decoupled weight decay is the standard for Transformers; robust default for all models \\
+Learning rate & $2\times10^{-3}$ peak & small models and batch 64; converged within a few epochs in smoke tests \\
+Schedule & one-cycle, 10\% warm-up & warm-up stabilises attention early; annealing to near zero gives a well-defined end point \\
+Weight decay & 0.05 & regularisation for a small dataset \\
+Batch size & 64 & CPU throughput vs.\ gradient noise \\
+Loss & cross-entropy, label smoothing 0.1 \cite{szegedy2016inception} & avoids over-confident outputs on near-duplicate windows \\
+Class weights & none & classes are nearly balanced (Chapter~\ref{ch:data}) \\
+Dropout & 0.1 (attention/FFN), 0.2--0.5 (heads) & standard values for each architecture \\
+Gradient clipping & global norm 1.0 & prevents rare spikes from the attention softmax \\
+Max epochs & 15 & upper bound only \\
+Early stopping & patience 5 on validation macro-F1 & stop when the model no longer generalises better \\
+Checkpoint & best validation macro-F1 & model selection on validation data only \\
+KD & $\alpha=0.7$, $T=4$ \cite{hinton2015kd} & common values; teacher = STPT-Large trained with the same seed \\
+Seeds & 0, 1, 2 & three independent runs; mean $\pm$ sample std reported \\
+\bottomrule
+\end{longtable}
+
+\section{Overfitting prevention}
+\begin{enumerate}[nosep]
+\item Early stopping and best-checkpoint saving on validation macro-F1.
+\item One-cycle learning-rate scheduling.
+\item Regularisation: weight decay, dropout, label smoothing.
+\item Training-only augmentation (Chapter~\ref{ch:pre}); validation and test inputs are deterministic.
+\item Validation split by \emph{recording} (RadHAR) or \emph{subject} (MiliPoint), so selection
+  reflects generalisation to unseen recordings or people.
+\item Small models: the proposed model has 117.5\,K parameters, compared with 4{,}773 RadHAR
+  training windows and about 4{,}500 MiliPoint training windows.
+\end{enumerate}
+For every epoch we log training loss, training accuracy, validation loss (NLL),
+validation accuracy, validation macro-F1 and the learning rate
+(\texttt{history.csv} in every run directory). The curves are discussed in
+Chapter~\ref{ch:results}.
+
+\section{Training-stability investigation}
+In the first round of RadHAR runs, results varied strongly across seeds
+(teacher: 95.5 / 96.1 / 87.0\%) and the distilled student selected its epoch-1
+checkpoint. The investigation (Issue \#16--\#17) traced this to validation
+composition. One 186-s squat recording contributed 553 of 2{,}709 validation
+windows (20\%) and was predicted as ``jump'' throughout, so validation macro-F1
+was dominated by a single recording. After capping each validation recording at 55
+windows, validation and test accuracy agree (e.g.\ 94.5\% validation accuracy at
+epoch 9 of the first re-run teacher). This is a genuine stability fix, not a
+tuning of results: the test set was not used to make it.

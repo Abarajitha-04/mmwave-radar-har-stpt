@@ -1,0 +1,23 @@
+\begin{table}[t]
+\centering
+\caption{Published results (as reported by the authors, under their own protocols; not directly comparable).}
+\label{tab:sota}
+\setlength{\tabcolsep}{3pt}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{llrl}
+\toprule
+Method & Dataset & Acc. (\%) & Protocol / note \\
+\midrule
+TD-CNN+BiLSTM \cite{singh2019radhar} & RadHAR & 90.47 & official test, window-level val. \\
+Lite-PointNet+BiLiLSTM \cite{gu2024lpn} & RadHAR & 95.12 & 79.7\,K params \\
+GNN + 3-D joints \cite{lee2022gnn} & RadHAR & 96.55 & joint pre-training \\
+MAK-GCN \cite{zakka2025makgcn} & RadHAR & 97.54 & 1.86\,M params \\
+OG-PCL \cite{yan2025ogpcl} & RadHAR & 91.75 & 5-fold CV, 0.83\,M params \\
+PointNet++ \cite{cui2023milipoint} & MiliPoint & 34.45 & chronological 80/10/10 \\
+MAK-GCN \cite{zakka2025makgcn} & MiliPoint & 98.25 & random 80/10/10 \\
+\midrule
+STPT-Lite+KD+robust (ours) & RadHAR & \rastptlitekdrobustAcc & official test, recording-disjoint val. \\
+STPT-Lite+KD+robust (ours) & MiliPoint & \mistptlitekdrobustAcc & subject-disjoint \\
+\bottomrule
+\end{tabular}}
+\end{table}

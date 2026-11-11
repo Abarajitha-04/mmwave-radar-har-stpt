@@ -1,0 +1,14 @@
+rh_stpt_lite_kd_s0 clean 96.94 combined3 42.47
+rh_stpt_lite_kd_s1 clean 95.65 combined3 55.34
+rh_stpt_lite_kd_s2 clean 95.54 combined3 33.35
+rh_stpt_lite_kd_robust_s0 clean 97.08 combined3 52.99
+rh_stpt_lite_kd_robust_s1 clean 96.04 combined3 68.67
+rh_stpt_lite_kd_robust_s2 clean 97.36 combined3 49.34
+rh_pointnet_s0 clean 97.0 combined3 51.53
+rh_pointnet_s1 clean 96.24 combined3 50.1
+rh_pointnet_s2 clean 95.68 combined3 52.73
+rh_pointnet_robust_s0 clean 97.45 combined3 91.39
+rh_pointnet_robust_s1 clean 97.25 combined3 91.98
+rh_pointnet_robust_s2 clean 97.45 combined3 93.27
+rh_pointnet_lstm_s0 clean 95.88 combined3 45.33
+rh_pointnet2_s0 clean 97.53 combined3 53.55

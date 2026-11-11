@@ -1,0 +1,36 @@
+\chapter{Conclusion}
+
+\textbf{What was developed.} A complete, reproducible pipeline for
+privacy-preserving activity recognition from mmWave radar point clouds. It
+comprises safe dataset loaders for RadHAR and MiliPoint, radar-specific
+pre-processing (antenna-return ROI, Doppler-based person centring, 1.2\,m clutter
+gating), seven model families including the proposed STPT-Lite, a seeded
+noise-perturbation module, an automated leakage audit, a training/evaluation
+harness with statistics, an exported inference bundle, a command-line inference
+tool and an interactive Streamlit demonstration.
+
+\textbf{Why these methods.} Every choice traces back to a measurement
+(Table~\ref{tab:trace}). The clutter removal follows from the range/Doppler
+analysis. The factorised attention follows from the extreme per-frame sparsity
+together with strong temporal structure. Recording- and subject-disjoint splits
+follow from the overlap of windows. The validation cap and the longer MiliPoint
+schedule follow from observed failures (Chapter~10).
+
+\textbf{What was demonstrated.} On 49 MiliPoint actions performed by unseen
+people, the proposed STPT-Lite+KD+robust reaches \mistptlitekdrobustAcc\% top-1
+(distillation alone: \mistptlitekdAcc\%), about 17 points above the best re-implemented
+baseline, with \oursParamsK\,K parameters, \oursMflops\,MFLOPs, \oursLat\,ms CPU
+latency and \oursIntMB\,MB of INT8 weights. Noise-robust training improves
+accuracy under every perturbation type on MiliPoint without lowering clean
+accuracy. On RadHAR all models saturate at about 96--98\%.
+
+\textbf{What was verified.} Split disjointness, absence of duplicated
+recordings and frames, train-only statistics and validation-only checkpoint
+selection (automated audit). The tests pass, the saved model reloads and runs on
+raw files, and the demo works end to end (application test harness and
+real-browser screenshots).
+
+\textbf{What remains unresolved.} RadHAR cannot test new users or rooms. Our
+PointNet++ re-implementation under-performs on MiliPoint. Under extreme
+sparsity STPT-Lite degrades more than PointNet. No on-device deployment or
+clinical evaluation was performed (Chapter~14).

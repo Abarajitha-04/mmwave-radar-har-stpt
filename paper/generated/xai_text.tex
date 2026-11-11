@@ -1,0 +1,20 @@
+\textbf{Temporal attention and occlusion.} The [CLS] attention of the last
+block is spread almost evenly over the twelve segments (0.07--0.09 per
+segment, against 0.083 for uniform attention), with class-specific emphasis: the
+middle of the window for jumping jacks, early segments for squats, and the
+first segment for walking (Fig.~\ref{fig:xai}). Removing a single segment
+(occlusion) lowers the true-class probability by less than one percentage point
+on average. The model therefore integrates evidence over the whole window and
+does not depend on any single 170-ms segment, which is consistent with its
+tolerance to frame loss. Attention and occlusion importance agree only
+moderately (Pearson $r=\xaiCorr$ over the class$\times$segment cells), so we
+treat attention as a coarse indication and not as a faithful explanation.
+\textbf{Point saliency.} Gradient saliency concentrates on the returns of the
+moving limbs and torso and is low on isolated returns far from the body,
+i.e.\ on the residual clutter that survives gating. \textbf{Embeddings.} In a
+t-SNE of RadHAR test embeddings the classes form compact, well-separated
+clusters (silhouette \silSTPTLiteKDrobust{} in the model's embedding space
+versus \silPointNet{} for PointNet). \textbf{Errors.} The remaining RadHAR
+errors are mostly windows predicted as \emph{jump} (precision 91\%), which
+shares the strong vertical Doppler pattern of jumping jacks and squats. On
+MiliPoint, errors concentrate in groups of kinematically similar actions.

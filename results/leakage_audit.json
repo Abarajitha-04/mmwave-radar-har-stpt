@@ -1,0 +1,210 @@
+{
+ "radhar": {
+  "recordings_per_split": {
+   "train": 113,
+   "val": 29,
+   "test": 58
+  },
+  "recording_overlap": {
+   "train&val": 0,
+   "train&test": 0,
+   "val&test": 0
+  },
+  "duplicate_recordings_any_split": [],
+  "identical_frames": {
+   "train&val": 0,
+   "train&test": 0,
+   "val&test": 0
+  },
+  "frames_checked": {
+   "train": 100329,
+   "val": 28604,
+   "test": 38677
+  },
+  "windows": {
+   "train": 4773,
+   "val": 1595,
+   "test": 3565
+  },
+  "window_recording_overlap": {
+   "train&val": 0,
+   "train&test": 0,
+   "val&test": 0
+  },
+  "class_counts": {
+   "train": [
+    1075,
+    852,
+    828,
+    796,
+    1222
+   ],
+   "val": [
+    275,
+    330,
+    275,
+    330,
+    385
+   ],
+   "test": [
+    714,
+    673,
+    734,
+    674,
+    770
+   ]
+  },
+  "intensity_stats_train_only": {
+   "used_val": [
+    28.48161506652832,
+    3.9005091190338135
+   ],
+   "used_test": [
+    28.48161506652832,
+    3.9005091190338135
+   ],
+   "recomputed_train": [
+    28.48161506652832,
+    3.9005091190338135
+   ],
+   "match": true
+  },
+  "session": {
+   "test_min_gap_to_train_s": 1.6184110641479492,
+   "test_median_gap_to_train_s": 28.58906900882721,
+   "test_recordings_within_10min_of_train": 58,
+   "recording_days": {
+    "train": [
+     "2019-06-18",
+     "2019-06-19",
+     "2019-06-28",
+     "2019-06-30"
+    ],
+    "val": [
+     "2019-06-18",
+     "2019-06-19",
+     "2019-06-28",
+     "2019-06-30"
+    ],
+    "test": [
+     "2019-06-18",
+     "2019-06-19",
+     "2019-06-28",
+     "2019-06-30"
+    ]
+   }
+  },
+  "subject_ids_available": false
+ },
+ "milipoint": {
+  "subject": {
+   "subjects": {
+    "train": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "val": [
+     6,
+     7
+    ],
+    "test": [
+     8,
+     9,
+     10
+    ]
+   },
+   "subject_overlap": {
+    "train&val": [],
+    "train&test": [],
+    "val&test": []
+   },
+   "shared_frames": {
+    "train&val": 0,
+    "train&test": 0,
+    "val&test": 0
+   },
+   "windows": {
+    "train": 4825,
+    "val": 1375,
+    "test": 3472
+   },
+   "test_frames_also_in_train_windows": 0,
+   "test_frames_total": 49764,
+   "fraction_test_frames_seen_in_training": 0.0
+  },
+  "official": {
+   "subjects": {
+    "train": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10
+    ],
+    "val": [
+     0,
+     1,
+     4
+    ],
+    "test": [
+     0,
+     8
+    ]
+   },
+   "subject_overlap": {
+    "train&val": [
+     0,
+     1,
+     4
+    ],
+    "train&test": [
+     0,
+     8
+    ],
+    "val&test": [
+     0
+    ]
+   },
+   "shared_frames": {
+    "train&val": 0,
+    "train&test": 0,
+    "val&test": 0
+   },
+   "windows": {
+    "train": 5839,
+    "val": 1391,
+    "test": 1456
+   },
+   "test_frames_also_in_train_windows": 0,
+   "test_frames_total": 20532,
+   "fraction_test_frames_seen_in_training": 0.0
+  },
+  "random": {
+   "windows": {
+    "train": 5648,
+    "val": 1412,
+    "test": 1413
+   },
+   "test_frames_also_in_train_windows": 43704,
+   "test_frames_total": 59952,
+   "fraction_test_frames_seen_in_training": 0.7289831865492394,
+   "mean_max_overlap_test_window_with_a_train_window": 0.5865180467091295,
+   "test_windows_with_any_overlap": 0.9122434536447275
+  }
+ },
+ "model_selection": {
+  "runs_checked": 0,
+  "consistent": 0,
+  "note": "checkpoint = epoch with highest validation macro-F1; test set evaluated once after training"
+ }
+}

@@ -1,0 +1,31 @@
+\section{Limitations}
+\textbf{Benchmarks.} RadHAR has two subjects, no subject identifiers, and test
+recordings from the same sessions as the training recordings, so it cannot
+measure generalisation to new users. MiliPoint offers $xyz$ only and three test
+subjects, and its action names are not published. \textbf{Baselines.} All
+baselines were re-implemented by us under one training budget (at most 15/30
+epochs with early stopping, CPU-only). Our PointNet++ did not train well on
+MiliPoint's six-point frames, and DGCNN and Point Transformer were run with one
+seed where noted. Published implementations with tuned neighbourhood
+parameters and longer training may perform better. \textbf{Robustness.}
+Perturbations are applied to recorded point clouds and are not a physical radar
+simulation. Under extreme sparsity (12.5\% of returns kept), STPT-Lite degrades
+more than PointNet. \textbf{Deployment.} Latency was measured on one desktop CPU
+thread, and storage is computed for INT8 weights. On-device deployment was not
+performed. \textbf{Scope.} Single person, fixed 2-s windows, no fall labels,
+and no clinical validation.
+
+\section{Conclusion and Future Work}
+We presented STPT-Lite, a factorised spatio-temporal point transformer for
+privacy-preserving activity recognition from sparse mmWave radar point clouds,
+together with Doppler-based person centring and clutter gating. On 49 MiliPoint
+actions performed by unseen people, the distilled, noise-robust model reaches
+\mistptlitekdrobustAcc\% top-1 (\mistptlitekdrobustTopthree\% top-3), about 17 points above the best re-implemented baseline, at
+\oursParamsK\,K parameters, \oursMflops\,MFLOPs and \oursLat\,ms per window. On
+RadHAR all models saturate at about 96--98\%, and the pre-processing, not the
+architecture, explains the gain over the original 90.5\%. A dedicated audit
+shows that random window splits leak most test frames into training, which
+accounts for much of the spread of published MiliPoint results. Future work:
+leave-one-subject-out and cross-room evaluation on datasets with subject
+identifiers and fall events, deployment on the radar's companion processor, and
+self-supervised pre-training on the large unlabelled portions of both datasets.

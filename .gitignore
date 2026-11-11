@@ -1,0 +1,24 @@
+# raw / processed datasets (download instructions in README)
+ext/
+data/
+# build products and scratch
+final_submission/
+*.zip
+presentation/render/
+__pycache__/
+.pytest_cache/
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+figures/demo/_video/
+results/superseded/
+!results/*.log
+!results/logs/*.log

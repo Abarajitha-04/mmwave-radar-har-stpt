@@ -1,0 +1,64 @@
+\section{Experimental Setup}
+\label{sec:setup}
+
+\subsection{Datasets and leakage-free protocols}
+\label{sec:data}
+\textbf{RadHAR (MMActivity)} \cite{singh2019radhar}: TI IWR1443 radar, 30\,Hz,
+five activities (boxing, jumping jacks, jumping, squats, walking), 200
+recordings (71.5\,min train, 21.4\,min test), median 21 returns per frame. We
+parse the raw ROS dumps and recover the official 71.6/21.4-minute partition. As
+in \cite{singh2019radhar}, samples are 2-s windows (60 frames) with a 10-frame
+stride (3{,}565 test windows; the original paper reports 3{,}538). We keep the
+\emph{official test recordings} unchanged. The validation set, however, holds
+out 20\% of the \emph{training recordings} per class (29 recordings) instead of
+20\% of the windows. Neighbouring windows share 50 of 60 frames, so a
+window-level split would leak near-duplicates into the data used for model
+selection. A few training recordings are 120--190\,s long instead of 20\,s, so
+each validation recording contributes at most 55 evenly spaced windows. This
+keeps one long recording from dominating model selection (1{,}595 validation
+windows). Training windows use a 20-frame stride (4{,}773 windows), the same
+for every model.
+
+\textbf{MiliPoint} \cite{cui2023milipoint}: TI IWR1843, 24\,Hz, 11 subjects, 49
+actions. 212{,}920 frames carry action labels, matching the original paper. The
+median frame has 6 returns, with $xyz$ only. Labelled frames are grouped into
+1{,}139 contiguous single-action runs, and 2-s windows (48 frames) never cross a
+run boundary. Our \textbf{primary protocol is subject-disjoint}: subjects 8--10
+form the test set (3{,}569 windows), subjects 6--7 the validation set, and the six
+remaining subjects the training set. For comparison with published numbers we
+also evaluate (a) the \emph{chronological} 80/10/10 cut used by the MiliPoint
+code and (b) a \emph{random} 80/10/10 split of overlapping windows, which is
+leaky by construction.
+
+\subsection{Baselines}
+All models were re-implemented in pure PyTorch and trained under identical data,
+augmentation and optimisation settings:
+the \textbf{voxel TD-CNN+BiLSTM} of RadHAR \cite{singh2019radhar} (per-segment
+$10\times32\times32$ occupancy grids, 3-D convolutions with 8/16/16 filters, a
+reduced width for CPU training);
+\textbf{PointNet} \cite{qi2017pointnet};
+\textbf{PointNet+BiLSTM}, a frame-level temporal baseline in the spirit of
+\cite{gu2024lpn};
+\textbf{PointNet++} (single-scale grouping) \cite{qi2017pointnet2};
+\textbf{DGCNN} \cite{wang2019dgcnn};
+and \textbf{Point Transformer} \cite{zhao2021pt}.
+The static set models receive all $G\!\times\!P$ points with time as a feature.
+DGCNN and Point Transformer use a 128-point subset because their cost grows
+quadratically with the number of points. We also compare against published
+results under their own protocols (Table~\ref{tab:sota}).
+
+\subsection{Training and evaluation details}
+All models use AdamW \cite{loshchilov2019adamw} (learning rate
+$2\!\times\!10^{-3}$, weight decay 0.05), a one-cycle schedule, batch size 64,
+label smoothing 0.1 and gradient clipping at 1.0. Training runs for at most 15
+epochs with early stopping (patience 5) on \emph{validation macro-F1}. The
+selected checkpoint is evaluated once on the test set. Every configuration is
+trained with three seeds (0, 1, 2), and we report mean $\pm$ sample standard
+deviation. For the reference model we give 95\% bootstrap confidence intervals
+(2{,}000 resamples of test windows) \cite{efron1979bootstrap}. Paired
+comparisons use exact McNemar tests \cite{mcnemar1947} with Holm correction
+\cite{holm1979} within each seed. Metrics are top-1 accuracy and macro-F1, plus
+top-3 accuracy for MiliPoint. For efficiency we report parameters, FLOPs per
+window, FP32/INT8 storage, and median CPU latency at batch size 1 on a single
+thread (Intel Xeon, PyTorch~2.15). Single-thread CPU latency stands in for an
+edge processor. All experiments ran on a 2-core CPU without a GPU.

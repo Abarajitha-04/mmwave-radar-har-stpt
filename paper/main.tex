@@ -1,0 +1,69 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,calc}
+\usepackage[hidelinks]{hyperref}
+\input{generated/numbers.tex}
+
+\begin{document}
+
+\title{Privacy-Preserving Human Activity Recognition from mmWave Radar Point Clouds using Lightweight Point Transformers}
+
+\author{
+\IEEEauthorblockN{Abarajitha S K, G Aswath Rupan, Indu Vadana M D, Murugan S}
+\IEEEauthorblockA{Department of Information Technology, PSG College of Technology, Coimbatore, India\\
+\{23i301, 23i321, 23i323, 23i338\}@psgtech.ac.in}
+}
+
+\maketitle
+
+\begin{abstract}
+Millimetre-wave (mmWave) radar can recognise human activities without capturing
+images of people. Its point clouds, however, are extremely sparse and full of
+clutter, and the accuracies reported for them depend heavily on how the data are
+split. We present \emph{STPT-Lite}, a lightweight spatio-temporal point
+transformer that applies self-attention among the points of short temporal
+segments and then across segment tokens. Each token is enriched with an explicit
+radar motion descriptor, and the model needs neither farthest-point sampling nor
+$k$-NN search. Doppler-based person centring and spatial gating remove the static
+clutter that makes up about half of the radar returns. With knowledge
+distillation from a larger teacher, noise-robust training and INT8 weights, STPT-Lite has
+\oursParamsK\,K parameters, needs \oursMflops\,MFLOPs per 2-s window, occupies
+\oursIntMB\,MB and runs in \oursLat\,ms on one CPU thread. We evaluate it against
+six re-implemented baselines (voxel CNN-LSTM, PointNet, PointNet+BiLSTM,
+PointNet++, DGCNN and Point Transformer) on two public datasets with three seeds
+and leakage-free splits. STPT-Lite reaches \rhOursAcc\,$\pm$\,\rhOursStd\% on the
+official RadHAR test recordings and \mpOursAcc\,$\pm$\,\mpOursStd\% top-1
+(\mpOursTopthree\% top-3) on 49 MiliPoint actions performed by subjects never
+seen in training, against \mipointnetAcc\% for the best baseline. Under a random
+window split, which is leaky, the same architecture scores \mpRandomAcc\%, showing how strongly the evaluation protocol inflates
+reported accuracy. Ablations, cross-dataset transfer, robustness tests and
+attention/occlusion analyses explain where the accuracy comes from.
+\end{abstract}
+
+\begin{IEEEkeywords}
+mmWave radar, point clouds, human activity recognition, privacy-preserving sensing, point transformer, knowledge distillation, edge AI
+\end{IEEEkeywords}
+
+\input{sections/intro.tex}
+\input{sections/related.tex}
+\input{sections/method.tex}
+\input{sections/setup.tex}
+\input{sections/results.tex}
+\input{sections/conclusion.tex}
+
+\section*{Acknowledgment}
+We thank the faculty of the Department of Information Technology, PSG College of
+Technology, for their guidance during the 23I006 Deep Learning course, and the
+authors of RadHAR and MiliPoint for releasing their datasets.
+
+\bibliographystyle{IEEEtran}
+\bibliography{refs}
+
+\end{document}

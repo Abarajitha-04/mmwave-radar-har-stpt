@@ -1,0 +1,65 @@
+\chapter{Implementation Details}
+
+\section{Repository structure}
+\begin{lstlisting}[numbers=none]
+src/            radhar_parse.py  safe_pickle.py  data_radhar.py  data_milipoint.py
+                models.py  noise.py  train.py  inference.py
+configs/        default.yaml
+scripts/        runner.py  jobs_main.txt  eda.py  analyze.py  xai_robust.py
+                leakage_audit.py  export_model.py  make_numbers.py  run_all.sh
+checkpoints/    exported inference bundles (model.pt, bundle.json, metrics.json)
+demo/           app.py  samples/ (held-out test recordings)
+tests/          test_pipeline.py (pytest)
+results/        runs/<tag>/ (metrics.json, history.csv, probabilities, model.pt), summaries
+docs/           DEVLOG.md  leakage_audit.md
+paper/  report/ figures/
+\end{lstlisting}
+
+\section{Module descriptions}
+\begin{longtable}{L{2.6cm}L{3.4cm}L{2.6cm}L{2.6cm}L{3.2cm}}
+\caption{Modules: purpose, interfaces, error handling and verification.}\label{tab:modules}\\
+\toprule
+Module & Purpose / key functions & Input & Output & Errors / verification \\
+\midrule\endfirsthead
+\toprule Module & Purpose / key functions & Input & Output & Errors / verification \\ \midrule\endhead
+\texttt{radhar\_parse} & \texttt{parse\_text}: regex over ROS messages; frames from \texttt{point\_id} resets & raw text & points $[N,5]$, frame $[N]$, timestamps & \texttt{ValueError} if no records; unit tests \\
+\texttt{safe\_pickle} & restricted \texttt{Unpickler.find\_class} & .pkl path & Python objects & \texttt{UnpicklingError} for any non-numpy global; unit test with a malicious pickle \\
+\texttt{data\_radhar} & \texttt{split\_recordings}, \texttt{make\_windows}, \texttt{RadHARWindows} (ROI, centring, gating, sampling, augmentation) & recordings dict & tensors $x[G,P,6]$, mask, label & shape/determinism tests; audit \\
+\texttt{data\_milipoint} & run construction, axis remap, 3 split protocols & pkl files, \texttt{id.json} & same as above & subject-disjoint test; audit \\
+\texttt{models} & 9 model classes; \texttt{build}, \texttt{n\_params} & $x$, mask & logits $[B,K]$ & forward test with empty segments for every model \\
+\texttt{noise} & 7 seeded perturbations; \texttt{robust\_augment} & $x$, mask, generator & new $x$, mask & determinism, no in-place change, effect-size tests \\
+\texttt{train} & training loop, KD, early stopping, metrics, INT8, FLOPs, latency & CLI + YAML & run directory & smoke runs; audit of checkpoint selection \\
+\texttt{inference} & \texttt{Bundle}: load, pre-process raw input, predict, predict with noise & bundle dir, raw file & probabilities, latency & rejects short/NaN/wrong-shape input; tests \\
+\texttt{demo/app.py} & Streamlit UI & bundle, upload/sample & interactive views & invalid uploads shown as errors; AppTest \\
+\bottomrule
+\end{longtable}
+
+\section{Key code}
+Factorised attention, segment tokenizer (\texttt{src/models.py}):
+\begin{lstlisting}[language=Python]
+f = self.emb(x)                                         # [N=B*G, P, d]
+q, k, v = self.qkv(self.n1(f)).view(N, P, 3, h, d//h).permute(2, 0, 3, 1, 4)
+bias = self.rel(x[:, :, None, :3] - x[:, None, :, :3]).permute(0, 3, 1, 2)
+a = (q @ k.transpose(-1, -2)) / math.sqrt(d // h) + bias
+a = a.masked_fill(m[:, None, None, :] == 0, -1e4).softmax(-1)
+f = f + self.proj((a @ v).transpose(1, 2).reshape(N, P, d))
+f = f + self.ff(self.n2(f))
+\end{lstlisting}
+Person centring and gating (\texttt{src/data\_radhar.py}):
+\begin{lstlisting}[language=Python]
+mov = allp[np.abs(allp[:, 3]) > 0]                      # moving returns (Doppler != 0)
+ctr = np.median(mov[:, :3] if len(mov) else allp[:, :3], 0)
+keep = np.linalg.norm(p[:, :2] - ctr[:2], axis=1) <= self.gate
+\end{lstlisting}
+Knowledge-distillation loss (\texttt{src/train.py}):
+\begin{lstlisting}[language=Python]
+kd = F.kl_div(F.log_softmax(logits / T, -1), F.softmax(tlog / T, -1),
+              reduction='batchmean') * T ** 2
+loss = (1 - alpha) * ce + alpha * kd
+\end{lstlisting}
+
+\section{Reproducibility}
+Every run fixes \texttt{torch.manual\_seed}, NumPy's seed and the data-loader
+generator. Evaluation inputs use a per-index seed. Each \texttt{metrics.json}
+stores the full argument list, the YAML configuration and the PyTorch version.
+\texttt{scripts/run\_all.sh} reproduces the full pipeline end to end.

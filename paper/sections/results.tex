@@ -1,0 +1,123 @@
+\section{Results and Discussion}
+\label{sec:results}
+
+\input{generated/tab_radhar.tex}
+\input{generated/tab_milipoint.tex}
+
+\subsection{Main comparison}
+\textbf{MiliPoint, unseen subjects (Table~\ref{tab:milipoint}).} This is the
+harder and more informative benchmark. The proposed STPT-Lite+KD+robust
+reaches \mistptlitekdrobustAcc\,$\pm$\,\mistptlitekdrobustStd\% top-1 and
+\mistptlitekdrobustTopthree\% top-3 accuracy on 49 actions (chance
+$\approx$2\%) performed by three people never seen in training or validation
+(distillation only: \mistptlitekdAcc\,$\pm$\,\mistptlitekdStd\%). It has the
+smallest seed spread of all students and comes within one point of its
+6$\times$ larger teacher (\mistptteacherAcc\,$\pm$\,\mistptteacherStd\%). The strongest
+re-implemented baseline is PointNet (\mipointnetAcc\,$\pm$\,\mipointnetStd\%).
+Adding a BiLSTM over per-segment PointNet features does \emph{not} close the gap
+(\mipointnetlstmAcc\%), so the gain is not explained by temporal modelling alone.
+It comes from attending among the points of a segment and from the explicit
+motion tokens (Section~\ref{sec:ablation}). The difference to every baseline is
+significant in all three seeds (Holm-corrected McNemar, $p<10^{-45}$). Our
+PointNet++ re-implementation performs poorly on MiliPoint
+(\mipointnetTwoAcc\%): with only $\sim$6 returns per frame, its ball queries
+(radii chosen for RadHAR's denser clouds) yield nearly empty neighbourhoods,
+and two of three seeds stopped early. We therefore do \emph{not} read this as
+evidence against PointNet++ in general. The MiliPoint authors report 34.45\% for
+their own implementation under a different, subject-overlapping split
+\cite{cui2023milipoint}.
+
+\textbf{Distillation} improves the mean (\mistptliteAcc$\rightarrow$\mistptlitekdAcc\%)
+and, more importantly, the worst case. Without it one seed collapsed to 38.6\%,
+whereas the distilled students stay above 44\% in every seed.
+
+\textbf{RadHAR (Table~\ref{tab:radhar}).} Every model reaches about 96--98\%,
+and the differences between models are mostly within one seed standard
+deviation. The proposed model obtains \rastptlitekdrobustAcc\,$\pm$\,\rastptlitekdrobustStd\%
+(95\% CI of seed 0: [\raCiLo, \raCiHi]). Plain PointNet is statistically
+indistinguishable from it in most seeds. RadHAR is saturated under our
+pre-processing. All models, including the voxel CNN-LSTM of the original paper,
+exceed the 90.47\% reported in \cite{singh2019radhar}, which points to the
+pre-processing (Section~\ref{sec:ablation}) rather than the architecture as the
+main source of the improvement on this dataset. Our leakage audit also shows
+that RadHAR's test recordings come from the same sessions and people as its
+training recordings (Section~\ref{sec:protocol}), so this benchmark cannot
+measure generalisation to new users.
+
+\textbf{Efficiency.} STPT-Lite has \oursParamsK\,K parameters and needs
+\oursMflops\,MFLOPs per 2-s window (Fig.~\ref{fig:efficiency}). Its latency is
+\oursLat\,ms on one CPU thread, against 7--11\,ms for PointNet++, DGCNN and
+Point Transformer, whose FPS and $k$-NN steps dominate. With INT8 weights the
+model occupies \oursIntMB\,MB, and accuracy is unchanged (\rhOursIntAcc\% on
+RadHAR, \mpOursIntAcc\% on MiliPoint). PointNet is faster (0.8\,ms) but 16--17
+points less accurate on unseen people.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{../figures/efficiency.pdf}
+\caption{Accuracy (mean $\pm$ std over seeds) versus parameters on both datasets, and RadHAR accuracy versus single-thread CPU latency.}
+\label{fig:efficiency}
+\end{figure*}
+
+\subsection{Ablation study}
+\label{sec:ablation}
+\input{generated/tab_ablation.tex}
+Table~\ref{tab:ablation} removes one component of STPT-Lite (without
+distillation) at a time and retrains with \ablSeeds{} seeds on RadHAR.
+\input{generated/ablation_text.tex}
+
+\subsection{Evaluation protocol and leakage}
+\label{sec:protocol}
+\input{generated/tab_protocol.tex}
+The same STPT-Lite scores \mistptliteAcc\% under our subject-disjoint split,
+\mpOfficialAcc\% under the chronological split of the MiliPoint code (which
+shares subjects between training and test), and \mpRandomAcc\% under a random
+split of overlapping windows (Table~\ref{tab:protocol}). The automated audit
+explains this. Under the random split, \mpAuditLeakFrames\% of the test frames
+also occur inside training windows, and \mpAuditLeakWins\% of the test windows
+overlap a training window, by \mpAuditLeakOverlap\% of their length on average.
+The inflation is therefore leakage, not learning. Accuracies of 98\% on
+MiliPoint \cite{zakka2025makgcn} and ours of about 50\% describe different
+tasks: recognising near-duplicates of seen sequences versus recognising actions
+of new people. On RadHAR, the same audit found that every official test
+recording lies within ten minutes of a training recording (median gap 29\,s) on
+the same four days, and the dataset contains no subject identifiers. RadHAR
+accuracy therefore measures generalisation to new recordings of known people
+in a known room.
+
+\subsection{Cross-dataset transfer}
+\input{generated/tab_transfer.tex}
+Table~\ref{tab:transfer} initialises STPT-Lite from the MiliPoint model ($xyz$
+input, harmonised axes) and fine-tunes it on a fraction of the RadHAR training
+recordings. \input{generated/transfer_text.tex}
+
+\subsection{Noise robustness}
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.49\textwidth]{../figures/robustness_radhar.pdf}\hfill
+\includegraphics[width=0.49\textwidth]{../figures/robustness_milipoint.pdf}
+\caption{Test accuracy under controlled perturbations (identical perturbed samples for every model; mean over the available seeds). Left: RadHAR; right: MiliPoint (unseen subjects).}
+\label{fig:robust}
+\end{figure*}
+\input{generated/robust_text.tex}
+
+\subsection{Explainability and error analysis}
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{../figures/confusion.pdf}
+\caption{Row-normalised confusion matrices of the proposed STPT-Lite+KD+robust (seed 0).}
+\label{fig:confusion}
+\end{figure}
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{../figures/xai_temporal.pdf}
+\includegraphics[width=\columnwidth]{../figures/tsne.pdf}
+\caption{Top: mean [CLS]$\rightarrow$segment attention and segment-occlusion importance per class (RadHAR test). Bottom: t-SNE of test embeddings.}
+\label{fig:xai}
+\end{figure}
+\input{generated/xai_text.tex}
+
+\input{sections/tab_sota.tex}
+\textbf{Published results.} Table~\ref{tab:sota} lists accuracies as reported by
+other authors. They use different splits, pre-processing and training budgets
+and are not directly comparable to ours; we include them for context only.

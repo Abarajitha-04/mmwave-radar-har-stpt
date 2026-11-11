@@ -1,0 +1,123 @@
+\documentclass[12pt,a4paper,oneside]{report}
+\usepackage[a4paper,margin=1in,headheight=15pt]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx}
+\usepackage{courier}
+\usepackage{amsmath,amssymb}
+\usepackage{setspace}\onehalfspacing
+\usepackage{graphicx,booktabs,longtable,array,tabularx,multirow,enumitem}
+\usepackage[font=small,labelfont=bf]{caption}
+\captionsetup[table]{position=above,skip=4pt}
+\captionsetup[figure]{position=below}
+\usepackage{titlesec}
+\titleformat{\chapter}[display]{\normalfont\fontsize{16}{19}\bfseries}{\chaptertitlename\ \thechapter}{8pt}{\fontsize{16}{19}\bfseries}
+\titlespacing*{\chapter}{0pt}{-20pt}{18pt}
+\titleformat{\section}{\normalfont\fontsize{14}{17}\bfseries}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\normalfont\fontsize{12}{15}\bfseries}{\thesubsection}{0.6em}{}
+\usepackage{fancyhdr}
+\pagestyle{fancy}\fancyhf{}
+\fancyhead[L]{\small Technical Development and Decision Report}
+\fancyhead[R]{\small mmWave Radar HAR -- Team 10}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\thepage}\renewcommand{\headrulewidth}{0pt}}
+\usepackage{listings}
+\lstset{basicstyle=\ttfamily\footnotesize,frame=single,breaklines=true,columns=fullflexible,keepspaces=true,
+  showstringspaces=false,numbers=left,numberstyle=\tiny,xleftmargin=1.5em,framexleftmargin=1.5em,aboveskip=6pt,belowskip=6pt}
+\usepackage{tikz}\usetikzlibrary{positioning,arrows.meta}
+\usepackage[hidelinks]{hyperref}
+\setlength{\parskip}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\input{../paper/generated/numbers.tex}
+\graphicspath{{../figures/}}
+\widowpenalty=10000 \clubpenalty=10000
+
+\begin{document}
+\pagenumbering{roman}
+\begin{titlepage}
+\centering
+{\large PSG COLLEGE OF TECHNOLOGY, COIMBATORE\par}
+{\normalsize Department of Information Technology\par}
+\vspace{1.2cm}
+{\normalsize 23I006 -- Deep Learning: Mini Project (Conference Paper)\par}
+\vspace{1.6cm}
+{\fontsize{18}{24}\selectfont\bfseries Privacy-Preserving Human Activity Recognition from mmWave Radar Point Clouds using Lightweight Point Transformers\par}
+\vspace{1.0cm}
+{\fontsize{14}{18}\selectfont Technical Development and Decision Report\par}
+\vspace{1.6cm}
+{\normalsize Submitted by (Team 10)\par}
+\vspace{0.3cm}
+\begin{tabular}{ll}
+Abarajitha S K & 23I301 \\
+G Aswath Rupan & 23I321 \\
+Indu Vadana M D & 23I323 \\
+Murugan S & 23I338 \\
+\end{tabular}
+\vfill
+{\normalsize B.Tech Information Technology\par}
+{\normalsize November 2026\par}
+\end{titlepage}
+
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+\input{chapters/abstract.tex}
+
+\chapter*{Acknowledgement}
+\addcontentsline{toc}{chapter}{Acknowledgement}
+We thank the faculty of the Department of Information Technology, PSG College of
+Technology, for their guidance in the 23I006 Deep Learning course. We also thank the
+authors of the RadHAR (UCLA NESL, BSD-3-Clause licence) and MiliPoint (MIT licence)
+datasets for making their data and code public.
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+\chapter*{Abbreviations}
+\addcontentsline{toc}{chapter}{Abbreviations}
+\begin{tabular}{@{}ll@{}}
+CI & Confidence interval \\
+CLS & Classification token \\
+CPU / GPU & Central / graphics processing unit \\
+DGCNN & Dynamic graph CNN \\
+FLOP & Floating-point operation \\
+FMCW & Frequency-modulated continuous wave \\
+FPS & Farthest-point sampling (or frames per second, from context) \\
+HAR & Human activity recognition \\
+INT8 / FP32 & 8-bit integer / 32-bit floating point \\
+KD & Knowledge distillation \\
+$k$-NN & $k$ nearest neighbours \\
+MLP & Multi-layer perceptron \\
+mmWave & Millimetre wave (30--300\,GHz; here 60--81\,GHz radar) \\
+NLL & Negative log-likelihood \\
+ROI & Region of interest \\
+STPT & Spatio-Temporal Point Transformer (proposed) \\
+t-SNE & t-distributed stochastic neighbour embedding \\
+\end{tabular}
+
+\clearpage
+\pagenumbering{arabic}
+\input{chapters/ch01_overview.tex}
+\input{chapters/ch02_literature.tex}
+\input{chapters/ch03_dataset.tex}
+\input{chapters/ch04_architecture.tex}
+\input{chapters/ch05_preprocessing.tex}
+\input{chapters/ch06_model.tex}
+\input{chapters/ch07_training.tex}
+\input{chapters/ch08_leakage.tex}
+\input{chapters/ch09_implementation.tex}
+\input{chapters/ch10_failures.tex}
+\input{chapters/ch11_results.tex}
+\input{chapters/ch12_demo.tex}
+\input{chapters/ch13_testing.tex}
+\input{chapters/ch14_limitations.tex}
+\input{chapters/ch15_conclusion.tex}
+
+\bibliographystyle{IEEEtran}
+\bibliography{../paper/refs}
+\addcontentsline{toc}{chapter}{References}
+
+\appendix
+\input{chapters/appendix.tex}
+\end{document}

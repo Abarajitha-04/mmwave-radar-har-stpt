@@ -1,0 +1,115 @@
+\chapter{System Architecture and Design Decisions}
+
+\section{Overall architecture}
+Figure~\ref{fig:system} shows the complete system. Offline, raw dataset files are
+parsed into per-recording frame arrays and cut into leakage-free splits. A data
+module turns every 2-s window into a fixed tensor. The training script fits a
+model and selects a checkpoint on validation data only. The analysis scripts
+evaluate the held-out test set, the noise conditions and the statistics. The
+exported model \emph{bundle} (weights + pre-processing settings + class names)
+is the only artefact that the inference script and the demonstration
+application need.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[font=\footnotesize, >=Latex, node distance=5mm and 6mm,
+  b/.style={draw, rounded corners=2pt, align=center, minimum height=9mm, minimum width=24mm, fill=blue!6},
+  d/.style={draw, align=center, minimum height=8mm, minimum width=22mm, fill=gray!10}]
+\node[d] (raw) {raw RadHAR .txt\\MiliPoint .pkl};
+\node[b, right=of raw] (parse) {parse \&\\safe-unpickle};
+\node[b, right=of parse] (split) {leakage-free\\splits};
+\node[b, right=of split] (win) {windowing +\\pre-processing};
+\node[b, below=of win] (train) {training\\(val selection)};
+\node[b, left=of train] (eval) {test evaluation\\noise, stats, XAI};
+\node[b, left=of eval] (export) {export bundle\\(val-selected seed)};
+\node[d, left=of export] (bundle) {checkpoints/\\model + bundle.json};
+\node[b, below=of bundle] (inf) {inference.py\\(CLI)};
+\node[b, right=of inf] (app) {Streamlit demo\\(live inference)};
+\node[b, right=of app] (audit) {leakage audit\\+ unit tests};
+\node[b, right=of audit] (docs) {paper, report,\\slides};
+\draw[->] (raw)--(parse); \draw[->] (parse)--(split); \draw[->] (split)--(win); \draw[->] (win)--(train);
+\draw[->] (train)--(eval); \draw[->] (train.south) |- ++(0,-0.3) -| (export.south); \draw[->] (export)--(bundle);
+\draw[->] (bundle)--(inf); \draw[->] (bundle.south) |- ++(0,-0.25) -| (app.north); \draw[->] (eval.south) |- ++(0,-0.25) -| (docs.north);
+\draw[->] (split.south) |- ++(0,-1.9) -| (audit.north);
+\end{tikzpicture}
+\caption{End-to-end system architecture.}
+\label{fig:system}
+\end{figure}
+
+\section{Components}
+For each component, Table~\ref{tab:components} gives what it is, why it is used,
+the alternatives considered, how it connects to the rest of the system, and its
+limitations.
+
+\begin{longtable}{L{2.2cm}L{3.3cm}L{3.0cm}L{3.0cm}L{3.0cm}}
+\caption{Component design decisions.}\label{tab:components}\\
+\toprule
+Component & What / why & Alternatives & Connections & Limitations \\
+\midrule\endfirsthead
+\toprule Component & What / why & Alternatives & Connections & Limitations \\ \midrule\endhead
+Parser (\texttt{radhar\_parse.py}) & regex over ROS text; frame = run of \texttt{point\_id} from 0. Needed because only raw dumps exist & the original voxel script (slow, keeps no Doppler) & produces \texttt{radhar\_frames.npy} for the data module and the demo & relies on the ROS dump format \\
+Safe unpickler & loads MiliPoint pickles but allows only numpy reconstruction & plain \texttt{pickle.load} (allows code execution) & feeds \texttt{data\_milipoint.py} & a whitelist must be extended if the file format changes \\
+Data module (\texttt{data\_radhar.py}) & windowing, ROI, person centring, gating, per-segment sampling, augmentation & voxel grids; fixed zero-padding & used by training, evaluation, inference and the demo, so pre-processing is identical everywhere & 2-s windows only \\
+Models (\texttt{models.py}) & 7 architectures behind one interface \texttt{f(x, mask)} & PyG implementations & built by \texttt{build(name)}; used by training and inference & pure-PyTorch FPS/$k$-NN are slower than CUDA kernels \\
+Training (\texttt{train.py}) & AdamW, one-cycle, label smoothing, early stopping on val macro-F1, optional KD / robust augmentation & SGD, fixed epochs & reads \texttt{configs/default.yaml}; writes run directories & CPU-bound \\
+Noise (\texttt{noise.py}) & seeded perturbations for evaluation and training & ad-hoc numpy noise & robustness study, robust training, demo & synthetic, not physical radar simulation \\
+Inference (\texttt{inference.py}) & loads a bundle and applies the training pre-processing to raw input & re-implementing pre-processing in the app & CLI and demo & needs at least 2\,s of data \\
+Demo (\texttt{demo/app.py}) & interactive upload, visualisation, live prediction, noise injection & Gradio & imports \texttt{inference.py} & desktop browser; no live radar stream \\
+Audit (\texttt{leakage\_audit.py}) & automated overlap/duplicate/statistics checks & manual inspection & reads splits and run logs & cannot detect subject overlap without subject IDs \\
+\bottomrule
+\end{longtable}
+
+\section{Data-processing architecture}
+Raw data $\rightarrow$ per-recording arrays (points, frame index, timestamps)
+$\rightarrow$ recording/subject-level split $\rightarrow$ window list (recording, start
+frame) $\rightarrow$ on-the-fly tensor construction. Building tensors on the fly
+keeps memory small and lets each epoch draw different point samples, which acts as
+augmentation.
+
+\section{Training and inference architecture}
+Training uses one process per configuration (one CPU thread) and a small job queue
+(\texttt{scripts/runner.py}) that runs two jobs in parallel, skips finished jobs and
+resolves dependencies (a distilled student waits for its teacher). Inference
+runs one forward pass per 2-s window (sliding by 1/3\,s) and reports a
+recording-level majority vote.
+
+\section{Application architecture}
+The Streamlit application caches the loaded bundle, validates the uploaded file,
+calls \texttt{Bundle.windows\_from\_frames} (the same code path as evaluation) and
+renders Plotly 3-D views. It is described in Chapter~\ref{ch:demo}.
+
+\section{Edge deployment}
+The proposed model has no data-dependent sampling (no FPS or $k$-NN), only dense
+matrix products on tensors of fixed size ($12\times32$ points). This makes it
+straightforward to export to ONNX or TFLite-Micro-style runtimes. Its INT8 weights
+occupy \oursIntMB\,MB and one inference costs \oursMflops\,MFLOPs; the measured
+single-thread CPU latency is \oursLat\,ms. Deployment on an actual micro-controller
+was out of scope and has not been verified.
+
+\section{Decision traceability matrix}
+Table~\ref{tab:trace} links every important decision to the alternatives that
+were investigated and to the evidence behind the final choice. ``Issue \#'' refers
+to the development log (Chapter~10).
+
+\begin{longtable}{L{2.0cm}L{3.2cm}L{2.6cm}L{3.4cm}L{3.0cm}}
+\caption{Decision traceability matrix.}\label{tab:trace}\\
+\toprule
+Decision & Alternatives investigated & Final selection & Reason & Supporting evidence \\
+\midrule\endfirsthead
+\toprule Decision & Alternatives & Final & Reason & Evidence \\ \midrule\endhead
+Dataset & MM-Fi, mmBody & MiliPoint (primary), RadHAR (secondary) & prescribed; public; subject IDs (MiliPoint); Doppler (RadHAR) & Ch.~3; licences BSD-3 / MIT \\
+Combining datasets & joint training & separate experiments + $xyz$ transfer & label sets, sensors and features differ & Ch.~3 analysis; transfer results (Table~\ref{tab:transferreport}) \\
+Input representation & voxel grids; single frames & 12 segments $\times$ 32 points, 2-s window & frames too sparse (6--21 pts); voxels mostly empty & EDA; voxel baseline results \\
+Noise handling & DBSCAN; statistical/radius outlier removal; plain centroid & ROI + moving-point centring + 1.2\,m gating & clutter is static and far from the moving person & range histograms (Issue \#13); Fig.~\ref{fig:preprocreport}; gating ablation \\
+Model architecture & PointNet, PointNet++, DGCNN, Point Transformer, voxel CNN-LSTM, PointNet-LSTM & STPT-Lite (+KD) & accuracy/efficiency trade-off under identical protocol & Tables~\ref{tab:radharreport}--\ref{tab:mpreport} \\
+Compression & dynamic INT8; no compression & KD + weight-only INT8 & dynamic INT8 lost 7 pts and was slower & Issue \#11; INT8 accuracy in results \\
+Data splitting & random windows (RadHAR original, some MiliPoint work); chronological & recording-disjoint (RadHAR), subject-disjoint (MiliPoint) & overlapping windows leak & leakage audit (Ch.~8) \\
+Validation composition & all windows of each recording & $\leq$55 windows per recording & one long recording dominated selection & Issue \#16--\#17 \\
+Optimiser & SGD; Adam & AdamW + one-cycle & standard for attention models; stable & training curves \\
+Loss & plain cross-entropy; class weights & CE + label smoothing 0.1 (+KD) & near-duplicate windows; balanced classes & class counts (Ch.~3) \\
+Regularisation & none / heavy augmentation & weight decay, dropout, early stopping, standard + optional robust augmentation & generalisation & augmentation ablation; robustness study \\
+Model checkpoint & last epoch; best test & best validation macro-F1; exported seed chosen by validation & no test leakage in selection & audit: checkpoint consistency \\
+Demo framework & Gradio, Flask & Streamlit + Plotly & interactive 3-D, built-in test harness & AppTest results (Ch.~13) \\
+Point operations library & PyTorch Geometric, torch-cluster & pure PyTorch & no compiled extensions; portable & runs on CPU-only environment \\
+\bottomrule
+\end{longtable}

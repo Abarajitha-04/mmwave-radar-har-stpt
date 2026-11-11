@@ -1,0 +1,17 @@
+\begin{table}[h]
+\centering
+\caption{Per-class test precision, recall and F1 (\%) of the proposed model (STPT-Lite+KD+robust) on RadHAR (mean over seeds).}
+\label{tab:perclass}
+\begin{tabular}{lrrrr}
+\toprule
+Class & Precision & Recall & F1 & Windows \\
+\midrule
+boxing & 99.86 & 99.91 & 99.88 & 714 \\
+jumping jacks & 99.69 & 95.15 & 97.36 & 673 \\
+jump & 91.01 & 94.41 & 92.66 & 734 \\
+squats & 97.57 & 96.79 & 97.17 & 674 \\
+walk & 96.83 & 97.79 & 97.31 & 770 \\
+\bottomrule
+\end{tabular}
+\end{table}
+On MiliPoint the per-action recall of the proposed model (mean over seeds) ranges from 6.4\% (action 33) to 83.9\% (action 9); 27 of 49 actions are recalled at $\geq$50\% and 6 below 20\%. The weakest actions are confused with kinematically similar ones (off-diagonal clusters in Fig.~\ref{fig:confreport}).

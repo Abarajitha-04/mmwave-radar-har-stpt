@@ -1,0 +1,27 @@
+# Restored runs, executed after the main plan if time permits (priority order)
+rh_abl_noattn_s2 | --data radhar --model stpt_lite --seed 2 --no_attn
+rh_abl_nomotion_s2 | --data radhar --model stpt_lite --seed 2 --no_motion
+rh_abl_notemporal_s2 | --data radhar --model stpt_lite --seed 2 --no_temporal
+rh_abl_xyz_s2 | --data radhar --model stpt_lite --seed 2 --feats xyz
+rh_abl_nogate_s2 | --data radhar --model stpt_lite --seed 2 --gate 0
+rh_abl_augnone_s2 | --data radhar --model stpt_lite --seed 2 --aug none
+rh_abl_augnojitter_s2 | --data radhar --model stpt_lite --seed 2 --aug nojitter
+mpo_official_stpt_lite_s2 | --data mp_official --model stpt_lite --seed 2 --epochs 30
+mpo_random_stpt_lite_s2 | --data mp_random --model stpt_lite --seed 2 --epochs 30
+rh_dgcnn_s1 | --data radhar --model dgcnn --seed 1
+rh_dgcnn_s2 | --data radhar --model dgcnn --seed 2
+rh_voxel_tdcnn_s2 | --data radhar --model voxel_tdcnn --seed 2
+rh_xyz_scratch_f0.1_s2 | --data radhar --model stpt_lite --seed 2 --feats xyz --label_frac 0.1
+rh_xyz_scratch_f0.25_s2 | --data radhar --model stpt_lite --seed 2 --feats xyz --label_frac 0.25
+rh_xyz_mpinit_f0.1_s2 | --data radhar --model stpt_lite --seed 2 --feats xyz --label_frac 0.1 --init results/runs/mp_stpt_lite_s2 | mp_stpt_lite_s2
+rh_xyz_mpinit_f0.25_s2 | --data radhar --model stpt_lite --seed 2 --feats xyz --label_frac 0.25 --init results/runs/mp_stpt_lite_s2 | mp_stpt_lite_s2
+rh_xyz_mpinit_f1.0_s2 | --data radhar --model stpt_lite --seed 2 --feats xyz --label_frac 1.0 --init results/runs/mp_stpt_lite_s2 | mp_stpt_lite_s2
+mpo_official_pointnet_s1 | --data mp_official --model pointnet --seed 1 --epochs 30
+mpo_official_pointnet_s2 | --data mp_official --model pointnet --seed 2 --epochs 30
+mpo_official_pointnet2_s0 | --data mp_official --model pointnet2 --seed 0 --epochs 30
+mpo_random_pointnet_s1 | --data mp_random --model pointnet --seed 1 --epochs 30
+mpo_random_pointnet_s2 | --data mp_random --model pointnet --seed 2 --epochs 30
+mpo_random_pointnet2_s0 | --data mp_random --model pointnet2 --seed 0 --epochs 30
+mp_pointnet2_long_s0 | --data mp_subject --model pointnet2 --seed 0 --epochs 60 --patience 8
+mp_dgcnn_s0 | --data mp_subject --model dgcnn --seed 0 --epochs 30
+mp_pointtransformer_s0 | --data mp_subject --model pointtransformer --seed 0 --epochs 30

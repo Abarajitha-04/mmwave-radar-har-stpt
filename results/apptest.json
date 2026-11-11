@@ -1,0 +1,179 @@
+{
+ "n_steps": 28,
+ "n_failed": 0,
+ "seconds": 158.1,
+ "models": [
+  "stpt_lite_radhar",
+  "stpt_lite_milipoint"
+ ],
+ "checks": [
+  {
+   "step": "start (default bundle + sample)",
+   "exceptions": 0,
+   "errors": 0,
+   "detail": []
+  },
+  {
+   "step": "bundle stpt_lite_radhar",
+   "exceptions": 0,
+   "errors": 0,
+   "detail": []
+  },
+  {
+   "step": "stpt_lite_radhar / sample radhar_test_boxing.txt",
+   "exceptions": 0,
+   "errors": 0,
+   "detail": []
+  },
+  {
+   "step": "stpt_lite_radhar / sample radhar_test_jack.txt",
+   "exceptions": 0,
+   "errors": 0,
+   "detail": []
+  },
+  {
+   "step": "stpt_lite_radhar / sample radhar_test_jump.txt",
+   "exceptions": 0,
+   "errors": 0,
+   "detail": []
+  },
+  {
+   "step": "stpt_lite_radhar / sample radhar_test_squats.txt",
+   "exceptions": 0,
+   "errors": 0,
+   "detail": []
+  },
+  {
+   "step": "stpt_lite_radhar / sample radhar_test_walk.txt",
+   "exceptions": 0,
+   "errors": 0,
+   "detail": []
+  },
+  {
+   "step": "stpt_lite_radhar / noise jitter",
+   "exceptions": 0,
+   "errors": 0,
+   "detail": []
+  },
+  {
+   "step": "stpt_lite_radhar / noise dropout",
+   "exceptions": 0,
+   "errors": 0,
+   "detail": []
+  },
+  {
+   "step": "stpt_lite_radhar / noise sparsity",
+   "exceptions": 0,
+   "errors": 0,
+   "detail": []
+  },
+  {
+   "step": "stpt_lite_radhar / noise outliers",
+   "exceptions": 0,
+   "errors": 0,
+   "detail": []
+  },
+  {
+   "step": "stpt_lite_radhar / noise density",
+   "exceptions": 0,
+   "errors": 0,
+   "detail": []
+  },
+  {
+   "step": "stpt_lite_radhar / noise frameloss",
+   "exceptions": 0,
+   "errors": 0,
+   "detail": []
+  },
+  {
+   "step": "stpt_lite_radhar / noise combined",
+   "exceptions": 0,
+   "errors": 0,
+   "detail": []
+  },
+  {
+   "step": "bundle stpt_lite_milipoint",
+   "exceptions": 0,
+   "errors": 0,
+   "detail": []
+  },
+  {
+   "step": "stpt_lite_milipoint / sample milipoint_test_subj9_action01.npz",
+   "exceptions": 0,
+   "errors": 0,
+   "detail": []
+  },
+  {
+   "step": "stpt_lite_milipoint / sample milipoint_test_subj8_action24.npz",
+   "exceptions": 0,
+   "errors": 0,
+   "detail": []
+  },
+  {
+   "step": "stpt_lite_milipoint / sample milipoint_test_subj8_action04.npz",
+   "exceptions": 0,
+   "errors": 0,
+   "detail": []
+  },
+  {
+   "step": "stpt_lite_milipoint / sample milipoint_test_subj8_action17.npz",
+   "exceptions": 0,
+   "errors": 0,
+   "detail": []
+  },
+  {
+   "step": "stpt_lite_milipoint / sample milipoint_test_subj8_action31.npz",
+   "exceptions": 0,
+   "errors": 0,
+   "detail": []
+  },
+  {
+   "step": "stpt_lite_milipoint / sample milipoint_test_subj8_action13.npz",
+   "exceptions": 0,
+   "errors": 0,
+   "detail": []
+  },
+  {
+   "step": "stpt_lite_milipoint / noise jitter",
+   "exceptions": 0,
+   "errors": 0,
+   "detail": []
+  },
+  {
+   "step": "stpt_lite_milipoint / noise dropout",
+   "exceptions": 0,
+   "errors": 0,
+   "detail": []
+  },
+  {
+   "step": "stpt_lite_milipoint / noise sparsity",
+   "exceptions": 0,
+   "errors": 0,
+   "detail": []
+  },
+  {
+   "step": "stpt_lite_milipoint / noise outliers",
+   "exceptions": 0,
+   "errors": 0,
+   "detail": []
+  },
+  {
+   "step": "stpt_lite_milipoint / noise density",
+   "exceptions": 0,
+   "errors": 0,
+   "detail": []
+  },
+  {
+   "step": "stpt_lite_milipoint / noise frameloss",
+   "exceptions": 0,
+   "errors": 0,
+   "detail": []
+  },
+  {
+   "step": "stpt_lite_milipoint / noise combined",
+   "exceptions": 0,
+   "errors": 0,
+   "detail": []
+  }
+ ]
+}

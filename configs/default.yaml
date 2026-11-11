@@ -1,0 +1,15 @@
+# Default hyper-parameters for src/train.py (command-line flags override these).
+# Chosen once, before any test-set evaluation; identical for every model.
+optimiser: {lr: 0.002, wd: 0.05, bs: 64, schedule: one-cycle (10 % warm-up)}
+epochs: 15            # upper bound; early stopping on validation macro-F1
+patience: 5
+label_smoothing: 0.1
+grad_clip: 1.0
+G: 12                 # temporal segments per 2-s window
+P: 32                 # points sampled per segment
+gate: 1.2             # m, horizontal gating radius around the person (RadHAR)
+feats: full           # full = x,y,z,Doppler,intensity,time ; xyz = Doppler/intensity zeroed
+aug: std              # std = rotation+scale+1 cm jitter ; nojitter ; none
+robust: 0             # 1 = add noise-robust augmentation (src/noise.py: robust_augment)
+kd_alpha: 0.7
+kd_T: 4.0

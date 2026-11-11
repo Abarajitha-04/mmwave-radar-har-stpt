@@ -1,0 +1,51 @@
+\section{Introduction}
+Monitoring daily activity at home, for example in elderly care, fall-risk
+screening or rehabilitation, needs sensing that works in the dark, through
+clothing, and without recording images of people. Cameras fail the last
+requirement, and wearables depend on users remembering to wear and charge them.
+Low-cost single-chip mmWave radars (60--81\,GHz) output a sparse 3-D point cloud
+with a Doppler velocity for every point. Identity is not visually recoverable
+from such data, which makes radar attractive for privacy-preserving human
+activity recognition (HAR) \cite{singh2019radhar,ullmann2023survey}.
+
+Radar point clouds differ sharply from the LiDAR and CAD data that most
+point-cloud networks are designed for. A frame contains only about 6--21 returns
+(Section~\ref{sec:data}). Many returns are static clutter or multipath rather than
+the person. The useful signal lies in how the cloud moves over time rather than
+in its instantaneous shape. Existing approaches either voxelise the
+cloud \cite{singh2019radhar}, which wastes computation on empty cells, or apply
+dense-point backbones such as PointNet++, DGCNN or Point Transformer
+\cite{qi2017pointnet2,wang2019dgcnn,zhao2021pt}. Those backbones rely on
+farthest-point sampling and $k$-NN search, which are slow on embedded processors.
+A second, less visible problem concerns evaluation. Radar HAR samples are short
+windows cut with large overlap from long recordings, so random window-level
+splits place near-identical samples in training and test. Published accuracies
+on the same dataset consequently range from about 34\% to 98\%
+\cite{cui2023milipoint,zakka2025makgcn}.
+
+This paper studies privacy-preserving HAR from mmWave point clouds with a focus
+on two things: models that are light enough for edge deployment, and
+measurements that are honest. Our contributions are:
+\begin{itemize}
+\item \textbf{STPT-Lite}, a factorised spatio-temporal point transformer.
+  Attention runs within short temporal segments and then across segment tokens,
+  each token is augmented with an explicit radar motion descriptor, and no FPS or
+  $k$-NN is needed. With knowledge distillation, noise-robust training and INT8
+  weights it reaches
+  \rhOursAcc\% on RadHAR with \oursParamsK\,K parameters, \oursMflops\,MFLOPs,
+  \oursIntMB\,MB of storage and \oursLat\,ms single-thread CPU latency.
+\item \textbf{Radar-specific pre-processing}: moving-point (Doppler-based) person
+  centring and spatial gating. Together they remove the static clutter that makes
+  up about half of the returns, along with the scene shortcut that clutter
+  creates.
+\item \textbf{Leakage-free evaluation} on two public datasets: recording-disjoint
+  validation on RadHAR and a subject-disjoint split on MiliPoint, where STPT-Lite
+  reaches \mpOursAcc\% top-1 on 49 actions performed by unseen people. The same
+  architecture scores \mpRandomAcc\% under a leaky random split, which quantifies how
+  much the protocol inflates reported accuracy.
+\item A study with \textbf{six re-implemented baselines, three seeds, paired
+  significance tests, ablations, MiliPoint$\rightarrow$RadHAR transfer,
+  robustness to seven controlled perturbation types, and explainability} (temporal attention,
+  occlusion and point saliency).
+\end{itemize}
+Code, pre-processing and all run logs are released for reproducibility.

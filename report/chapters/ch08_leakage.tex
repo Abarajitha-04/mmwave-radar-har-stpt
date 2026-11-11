@@ -1,0 +1,70 @@
+\chapter{Data Leakage Prevention}
+\label{ch:leak}
+
+\section{Splitting methodology}
+\textbf{RadHAR}: the official test recordings (58) are kept unchanged. The
+remaining 142 training recordings are split 80/20 \emph{per class by recording}
+(113 train, 29 validation, fixed seed 0, independent of the model seed).
+\textbf{MiliPoint (primary)}: subject-disjoint, with subjects 8, 9, 10 for test,
+subjects 6, 7 for validation, and the remaining six subjects for training. Windows
+never cross the boundary of a single-action run.
+\textbf{Comparison protocols} (MiliPoint only, never used for model development):
+the chronological 80/10/10 cut of the MiliPoint code, and a random 80/10/10
+split of overlapping windows.
+
+\section{Restrictions}
+\begin{itemize}[nosep]
+\item \textbf{Pre-processing}: the only data-dependent statistic, the intensity
+  mean and standard deviation, is computed on training recordings and reused
+  unchanged for validation and test. Gating radius and ROI threshold come from the
+  EDA and are not learned.
+\item \textbf{Augmentation}: stochastic augmentation and robust-noise
+  augmentation are applied only in training mode, from a separate random stream.
+  Evaluation samples are deterministic (fixed per-index seed).
+\item \textbf{Test-set protection}: the checkpoint is chosen by validation
+  macro-F1. The test split is evaluated once per run, after training. No
+  hyper-parameter, pre-processing threshold or architecture choice was changed in
+  response to a test score. The only data-handling change made after the first
+  runs, the validation cap, was motivated by validation behaviour (Issue \#17).
+\item \textbf{Exported model}: the seed exported for the demo is chosen by
+  validation macro-F1, not by test accuracy.
+\end{itemize}
+
+\section{Automated audit}
+\texttt{scripts/leakage\_audit.py} recomputes every check from the data and run
+files. Its output (\texttt{docs/leakage\_audit.md}) is reproduced in
+Table~\ref{tab:audit}.
+
+\begin{longtable}{L{4.6cm}L{6.6cm}L{2.8cm}}
+\caption{Automated leakage-audit results.}\label{tab:audit}\\
+\toprule
+Check & Result & Status \\
+\midrule\endfirsthead
+\toprule Check & Result & Status \\ \midrule\endhead
+\csname @@input\endcsname ../paper/generated/audit_rows.tex 
+\bottomrule
+\end{longtable}
+
+\section{Findings}
+\begin{enumerate}[nosep]
+\item RadHAR splits share no recording, no identical recording content and no
+  identical frame. Our splits are therefore recording-disjoint.
+\item \textbf{RadHAR's official test set is not session-independent.} The ROS
+  timestamps show that every test recording was made within 10 minutes of a
+  training recording, on the same four days (median gap 29\,s), and the dataset
+  provides no subject IDs. Subject-independent generalisation therefore
+  \emph{cannot be verified} on RadHAR, and RadHAR accuracy should be read as
+  ``new recordings, same people and room''.
+\item On MiliPoint, the subject-disjoint split shares no subject and no frame
+  between splits. This is the protocol that tests generalisation to new people,
+  and it is our primary result.
+\item The chronological protocol of the MiliPoint code shares subjects (0 and 8)
+  between training and test.
+\item The random-window protocol places \mpAuditLeakFrames\% of test frames inside
+  training windows, and \mpAuditLeakWins\% of test windows overlap a training
+  window (by \mpAuditLeakOverlap\% of the window on average). Accuracies obtained
+  this way measure memorisation of near-duplicates; Chapter~\ref{ch:results}
+  quantifies the inflation.
+\item All completed runs satisfy ``saved checkpoint = epoch of maximal validation
+  macro-F1'' (\auditSelConsistent{} of \auditSelRuns{} runs).
+\end{enumerate}

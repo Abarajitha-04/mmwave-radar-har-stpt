@@ -1,0 +1,27 @@
+.......................                                                  [100%]
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED tests/test_pipeline.py::test_parse_sample_recording
+PASSED tests/test_pipeline.py::test_parse_rejects_garbage
+PASSED tests/test_pipeline.py::test_safe_pickle_blocks_code
+PASSED tests/test_pipeline.py::test_radhar_splits_disjoint_and_shapes
+PASSED tests/test_pipeline.py::test_milipoint_subject_disjoint
+PASSED tests/test_pipeline.py::test_noise_shapes_and_determinism[jitter]
+PASSED tests/test_pipeline.py::test_noise_shapes_and_determinism[dropout]
+PASSED tests/test_pipeline.py::test_noise_shapes_and_determinism[sparsity]
+PASSED tests/test_pipeline.py::test_noise_shapes_and_determinism[outliers]
+PASSED tests/test_pipeline.py::test_noise_shapes_and_determinism[density]
+PASSED tests/test_pipeline.py::test_noise_shapes_and_determinism[frameloss]
+PASSED tests/test_pipeline.py::test_noise_shapes_and_determinism[combined]
+PASSED tests/test_pipeline.py::test_noise_effects
+PASSED tests/test_pipeline.py::test_model_forward_with_empty_segments[pointnet]
+PASSED tests/test_pipeline.py::test_model_forward_with_empty_segments[pointnet_lstm]
+PASSED tests/test_pipeline.py::test_model_forward_with_empty_segments[pointnet2]
+PASSED tests/test_pipeline.py::test_model_forward_with_empty_segments[dgcnn]
+PASSED tests/test_pipeline.py::test_model_forward_with_empty_segments[pointtransformer]
+PASSED tests/test_pipeline.py::test_model_forward_with_empty_segments[voxel_tdcnn]
+PASSED tests/test_pipeline.py::test_model_forward_with_empty_segments[stpt_lite]
+PASSED tests/test_pipeline.py::test_model_forward_with_empty_segments[stpt_tiny]
+PASSED tests/test_pipeline.py::test_model_forward_with_empty_segments[stpt_teacher]
+PASSED tests/test_pipeline.py::test_bundle_inference_on_real_sample
+23 passed in 12.70s

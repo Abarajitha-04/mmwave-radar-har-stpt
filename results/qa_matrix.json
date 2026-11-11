@@ -1,0 +1,152 @@
+[
+ {
+  "area": "C1 Literature",
+  "check": "$\\geq$15 papers 2022--26 (16 of 40 references)",
+  "evidence": "paper/refs.bib",
+  "status": "PASS"
+ },
+ {
+  "area": "C1 Gap",
+  "check": "Research gap and contributions stated",
+  "evidence": "paper Sec. I--II",
+  "status": "PASS"
+ },
+ {
+  "area": "C2 Datasets",
+  "check": "Both datasets parsed and used",
+  "evidence": "results/eda\\_stats.json",
+  "status": "PASS"
+ },
+ {
+  "area": "C2 EDA",
+  "check": "EDA and pre-processing figures",
+  "evidence": "figures/eda\\_*, preproc\\_*",
+  "status": "PASS"
+ },
+ {
+  "area": "C2 Leakage",
+  "check": "Automated audit: splits disjoint, train-only statistics",
+  "evidence": "docs/leakage\\_audit.md",
+  "status": "FAIL"
+ },
+ {
+  "area": "C3 Model",
+  "check": "Proposed model implemented, diagram",
+  "evidence": "src/models.py, figures/arch.pdf",
+  "status": "PASS"
+ },
+ {
+  "area": "C4 Baselines",
+  "check": "$\\geq$3 baselines incl. SOTA (6 re-trained)",
+  "evidence": "results/summary\\_radhar.csv",
+  "status": "PASS"
+ },
+ {
+  "area": "C4 Seeds",
+  "check": "Proposed model, 3 seeds per dataset (3/3)",
+  "evidence": "results/all\\_runs.csv",
+  "status": "PASS"
+ },
+ {
+  "area": "C4 Statistics",
+  "check": "McNemar (Holm) and bootstrap CI",
+  "evidence": "results/stats.json",
+  "status": "PASS"
+ },
+ {
+  "area": "C4 Cross-dataset",
+  "check": "MiliPoint$\\rightarrow$RadHAR transfer",
+  "evidence": "results/summary\\_transfer.csv",
+  "status": "FAIL"
+ },
+ {
+  "area": "C4 Ablation",
+  "check": "Component ablation",
+  "evidence": "results/summary\\_ablation.csv",
+  "status": "PASS"
+ },
+ {
+  "area": "Robustness",
+  "check": "7 perturbation types, 3 severities, both datasets",
+  "evidence": "results/robustness\\_*.csv",
+  "status": "FAIL"
+ },
+ {
+  "area": "Training",
+  "check": "Loss/accuracy/LR logged every epoch for every run",
+  "evidence": "results/runs/*/history.csv",
+  "status": "PASS"
+ },
+ {
+  "area": "Metrics",
+  "check": "Accuracy, macro P/R/F1, per-class, top-3, latency, size",
+  "evidence": "metrics.json",
+  "status": "PASS"
+ },
+ {
+  "area": "C5 XAI",
+  "check": "Attention, occlusion, saliency, t-SNE",
+  "evidence": "results/xai.json",
+  "status": "PASS"
+ },
+ {
+  "area": "Checkpoint",
+  "check": "Exported model + inference script",
+  "evidence": "checkpoints/, src/inference.py",
+  "status": "PASS"
+ },
+ {
+  "area": "Tests",
+  "check": "pytest (23 passed, 0 failed)",
+  "evidence": "results/pytest.log",
+  "status": "PASS"
+ },
+ {
+  "area": "C7 Demo",
+  "check": "Streamlit demo, headless test (28 steps, 0 failed)",
+  "evidence": "results/apptest.json",
+  "status": "PASS"
+ },
+ {
+  "area": "C7 Demo video",
+  "check": "Screen recording of the live demo",
+  "evidence": "figures/demo/demo.mp4",
+  "status": "PASS"
+ },
+ {
+  "area": "Config",
+  "check": "Hyper-parameters in a config file",
+  "evidence": "configs/default.yaml",
+  "status": "PASS"
+ },
+ {
+  "area": "Documentation",
+  "check": "README, DEVLOG, reproduction script",
+  "evidence": "README.md, docs/",
+  "status": "PASS"
+ },
+ {
+  "area": "No placeholders",
+  "check": "No pending text in paper or report sources",
+  "evidence": "grep PENDINGTEXT",
+  "status": "FAIL"
+ },
+ {
+  "area": "C6 Paper",
+  "check": "Compiled / built and inspected page by page",
+  "evidence": "paper/main.pdf",
+  "status": "PASS"
+ },
+ {
+  "area": "Report",
+  "check": "Compiled / built and inspected page by page",
+  "evidence": "report/report.pdf",
+  "status": "FAIL"
+ },
+ {
+  "area": "C7 Slides",
+  "check": "Compiled / built and inspected page by page",
+  "evidence": "presentation/Team10\\_mmWave\\_HAR.pptx",
+  "status": "PASS"
+ }
+]

@@ -1,0 +1,50 @@
+\chapter{Failed Experiments, Errors and Rectification History}
+
+This chapter reproduces the continuous issue-resolution log
+(\texttt{docs/DEVLOG.md}). Entries are taken from the actual commands, error
+messages, logs and results of the development; no entry was invented. Times are
+UTC on 11 November 2026.
+
+{\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{@{}r L{1.5cm}L{3.0cm}L{3.0cm}L{3.0cm}L{2.4cm}L{2.0cm}@{}}
+\caption{Issue-resolution log.}\label{tab:devlog}\\
+\toprule
+\# & Stage & Issue / decision & Root cause / evidence & Correction & Verification & Outcome \\
+\midrule\endfirsthead
+\toprule \# & Stage & Issue / decision & Root cause / evidence & Correction & Verification & Outcome \\ \midrule\endhead
+\csname @@input\endcsname ../paper/generated/devlog_rows.tex 
+\bottomrule
+\end{longtable}}
+
+\section{Most consequential issues}
+\textbf{Clutter-biased centring (\#13).} Symptom: in the exploratory plots, the
+``centred'' model input placed the person about 0.7\,m off-centre, together with
+a large second cluster. Diagnosis: range histograms of all returns vs.\ moving
+returns showed that static clusters at 2.5\,m and 4.5\,m carried about half of
+the returns, while all moving returns were on the person. Alternatives
+considered: DBSCAN clustering (per-window cost, parameter sensitivity) and
+radius/statistical outlier removal (removes sparse limb returns). Correction:
+centring on moving returns plus 1.2\,m gating. Verification: the
+before/after figure and the ablation \emph{-- spatial gating}. All runs were
+restarted so that every reported number uses the same pipeline.
+
+\textbf{Validation dominated by one recording (\#16--\#17).} Symptom: validation
+accuracy (79\%) far below test accuracy (96\%), a seed spread of 9 points and an
+epoch-1 checkpoint for one model. Diagnosis: per-recording validation accuracy
+showed a single 186-s squat recording (20\% of validation windows) predicted as
+``jump''. Correction: at most 55 evenly spaced windows per validation recording.
+Verification: validation and test accuracy now agree. The test set played no
+part in the fix.
+
+\textbf{Quantisation (\#11).} PyTorch dynamic INT8 quantisation lost 7 points of
+accuracy and was \emph{slower} for these tiny layers. Weight-only per-channel
+INT8 kept accuracy (within 0.05 points) and reduced storage by a factor of 3.6.
+Only the INT8 storage size is claimed, not an INT8 speed-up.
+
+\textbf{Leakage findings (\#24--\#26).} The audit did not reveal leakage in our
+own protocols. It did reveal that the RadHAR benchmark cannot test session or
+subject independence, and that the random-window protocol used in some prior work
+leaks most of its test frames into training. This changed the emphasis of the
+evaluation (MiliPoint subject-disjoint as the primary result) and became a
+contribution of the paper.

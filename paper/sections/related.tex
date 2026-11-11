@@ -1,0 +1,48 @@
+\section{Related Work}
+\label{sec:related}
+
+\textbf{mmWave point-cloud HAR.} RadHAR \cite{singh2019radhar} released the
+MMActivity data used here. It voxelised each frame into a $10\times32\times32$
+grid and classified sequences with a time-distributed CNN and a BiLSTM (90.47\%
+accuracy). Later work moved to models that consume points directly.
+MMPoint-GNN \cite{gong2021mmpointgnn} builds dynamic graphs per frame. Lee and
+Kim \cite{lee2022gnn} pre-train a GNN on 3-D joint coordinates and report
+96.55\% on RadHAR. Gu et al.\ \cite{gu2024lpn} pair a light PointNet with a
+bidirectional linear-attention LSTM (95.12\%, 79.7\,K parameters).
+MAK-GCN \cite{zakka2025makgcn} learns multi-head adaptive graph kernels (97.54\%,
+1.86\,M parameters). OG-PCL \cite{yan2025ogpcl} uses occupancy-gated
+convolutions (91.75\%, 0.83\,M parameters) and reports PCT+LSTM
+\cite{guo2021pct} at 92.78\%. Gao et al.\ \cite{gao2025star} model each frame as
+a star graph around a virtual centre. Lim et al.\ \cite{lim2024fpga} deploy a
+4-bit pillar-based classifier on an FPGA. For gestures, Pantomime
+\cite{palipana2021pantomime} and Tesla-Rapture \cite{salami2023tesla} showed
+that sparse radar point clouds support lightweight recognisers. The same sensing
+also drives rehabilitation \cite{an2021mars}, mesh reconstruction
+\cite{xue2021mmmesh,chen2022mmbody} and scene flow \cite{ding2024milliflow}.
+Ullmann et al.\ \cite{ullmann2023survey} survey radar-based continuous HAR.
+
+\textbf{Benchmarks and evaluation protocols.} MiliPoint \cite{cui2023milipoint}
+(49 actions, 11 subjects) and MM-Fi \cite{yang2023mmfi} are recent large-scale
+benchmarks. On MiliPoint action classification the original authors report at most
+34.45\% (PointNet++), whereas MAK-GCN reports 98.25\% under an
+80/10/10 split. Several RadHAR studies validate on 20\% of training windows drawn at
+random, and those windows overlap by 50 of 60 frames. Data leakage of this kind is a
+known way to inflate results \cite{kaufman2012leakage}. To our knowledge, no
+prior work has measured its effect on radar point-cloud HAR.
+
+\textbf{Point-cloud backbones.} PointNet \cite{qi2017pointnet} and PointNet++
+\cite{qi2017pointnet2} introduced learning on raw point sets. DGCNN
+\cite{wang2019dgcnn} builds dynamic $k$-NN graphs. Point Transformer
+\cite{zhao2021pt}, PCT \cite{guo2021pct}, PTv2/PTv3 \cite{wu2022ptv2,wu2024ptv3},
+PointNeXt \cite{qian2022pointnext} and PointMLP \cite{ma2022pointmlp} raised accuracy
+on dense LiDAR and CAD data. P4Transformer \cite{fan2021p4t} handles point-cloud
+videos. All of these assume hundreds to thousands of points per frame and rely on
+FPS and $k$-NN, which are costly on micro-controllers.
+
+\textbf{Research gap.} (i) Most radar HAR models either reuse dense-point
+backbones or voxelise the data. Few exploit what is specific to radar: extreme
+sparsity, a direct Doppler measurement, and static clutter. (ii) Reported
+accuracies are rarely obtained with leakage-free (recording- or subject-disjoint)
+splits, and protocols differ between papers. (iii) Cross-dataset transfer
+between radar datasets and edge cost (latency, size, quantisation) are seldom
+reported together. This work addresses all three gaps.

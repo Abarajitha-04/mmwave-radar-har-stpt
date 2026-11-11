@@ -1,0 +1,45 @@
+\chapter{Configuration, Installation and Commands}
+
+\section{Default configuration (\texttt{configs/default.yaml})}
+\lstinputlisting[numbers=none]{../configs/default.yaml}
+
+\section{Installation}
+\begin{lstlisting}[numbers=none]
+python -m venv .venv && source .venv/bin/activate     # Windows: .venv\Scripts\activate
+pip install -r requirements.txt streamlit plotly pytest
+\end{lstlisting}
+
+\section{Data preparation}
+\begin{lstlisting}[numbers=none]
+git clone --depth 1 https://github.com/nesl/RadHAR ext/RadHAR
+git clone --depth 1 https://github.com/yizzfz/MiliPoint ext/MiliPoint
+# download MiliPoint_data.zip (link in the MiliPoint README) and unzip to ext/milipoint_raw/
+python src/radhar_parse.py ext/RadHAR/Data data/processed/radhar_frames.npy
+python scripts/eda.py
+\end{lstlisting}
+
+\section{Training and evaluation}
+\begin{lstlisting}[numbers=none]
+# one run
+python src/train.py --data radhar --model stpt_lite --seed 0 \
+       --teacher results/runs/rh_stpt_teacher_s0 --tag rh_stpt_lite_kd_s0
+# all runs of the study (2 parallel workers)
+python scripts/runner.py scripts/jobs_main.txt 2
+# tables, statistics, robustness, explainability, audit
+python scripts/analyze.py
+python scripts/xai_robust.py robust radhar ; python scripts/xai_robust.py robust milipoint
+python scripts/xai_robust.py robustfig ; python scripts/xai_robust.py xai
+python scripts/leakage_audit.py ; python scripts/make_numbers.py
+python -m pytest -q tests
+\end{lstlisting}
+
+\section{Inference and demonstration}
+\begin{lstlisting}[numbers=none]
+python scripts/export_model.py rh_stpt_lite_kd checkpoints/stpt_lite_kd_radhar radhar
+python src/inference.py --bundle checkpoints/stpt_lite_kd_radhar \
+       --input demo/samples/radhar_test_walk.txt
+streamlit run demo/app.py
+\end{lstlisting}
+
+\chapter{Test Log}
+\input{../paper/generated/test_log.tex}

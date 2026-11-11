@@ -1,0 +1,57 @@
+{
+ "radhar_test_boxing.txt": {
+  "label": "boxing",
+  "source": "ext/RadHAR/Data/Test/boxing/__20_boxing_6.txt",
+  "frames": 360
+ },
+ "radhar_test_jack.txt": {
+  "label": "jack",
+  "source": "ext/RadHAR/Data/Test/jack/__20_jacks_7.txt",
+  "frames": 360
+ },
+ "radhar_test_jump.txt": {
+  "label": "jump",
+  "source": "ext/RadHAR/Data/Test/jump/__20_jump_5.txt",
+  "frames": 360
+ },
+ "radhar_test_squats.txt": {
+  "label": "squats",
+  "source": "ext/RadHAR/Data/Test/squats/__20_squats_8.txt",
+  "frames": 360
+ },
+ "radhar_test_walk.txt": {
+  "label": "walk",
+  "source": "ext/RadHAR/Data/Test/walk/__20_walk_7.txt",
+  "frames": 360
+ },
+ "milipoint_test_subj9_action01.npz": {
+  "label": "action_01",
+  "subject": 9,
+  "frames": 96
+ },
+ "milipoint_test_subj8_action24.npz": {
+  "label": "action_24",
+  "subject": 8,
+  "frames": 96
+ },
+ "milipoint_test_subj8_action04.npz": {
+  "label": "action_04",
+  "subject": 8,
+  "frames": 96
+ },
+ "milipoint_test_subj8_action17.npz": {
+  "label": "action_17",
+  "subject": 8,
+  "frames": 96
+ },
+ "milipoint_test_subj8_action31.npz": {
+  "label": "action_31",
+  "subject": 8,
+  "frames": 96
+ },
+ "milipoint_test_subj8_action13.npz": {
+  "label": "action_13",
+  "subject": 8,
+  "frames": 96
+ }
+}

@@ -1,0 +1,38 @@
+\chapter{Limitations and Future Enhancements}
+
+\section{Limitations}
+\begin{enumerate}[nosep]
+\item \textbf{RadHAR is not a subject- or session-independent benchmark.} It has
+  two subjects, no subject IDs, and test recordings made minutes after training
+  recordings in the same room (Chapter~\ref{ch:leak}). High RadHAR accuracy
+  therefore shows generalisation to new recordings, not to new people or rooms.
+\item \textbf{MiliPoint}: the radar provides $xyz$ only, action names are not
+  published, and the test set has three subjects, so per-subject variance is
+  large and only partly captured.
+\item \textbf{Synthetic perturbations}: the robustness study perturbs recorded
+  point clouds; it does not simulate the physical radar (multipath geometry,
+  interference, different mounting heights or rooms).
+\item \textbf{Compute}: all experiments ran on a 2-core CPU. Training was capped
+  at 15 epochs with early stopping and a 20/24-frame training stride. DGCNN and
+  Point Transformer on MiliPoint were run with one seed because of their cost.
+  The voxel baseline uses fewer filters than the original RadHAR network.
+\item \textbf{Edge claims}: latency was measured on a desktop-class CPU thread and
+  storage is computed for INT8 weights; deployment on a micro-controller was not
+  carried out.
+\item \textbf{Scope}: no fall detection (no labels), single person only, fixed 2-s
+  windows, no clinical validation.
+\item \textbf{Explainability}: attention maps are not explanations in a causal
+  sense \cite{jain2019attention}; occlusion and gradient saliency give
+  complementary but approximate views.
+\end{enumerate}
+
+\section{Future enhancements}
+\begin{enumerate}[nosep]
+\item Collect or adopt a dataset with subject IDs, several rooms and fall events;
+  evaluate leave-one-subject-out and cross-room.
+\item Port the model to an embedded runtime (e.g.\ ONNX Runtime Mobile or an
+  MCU inference library) and measure on the radar's companion processor.
+\item Physics-based radar simulation for robustness (multipath, occlusion).
+\item Self-supervised pre-training on unlabelled radar data (both datasets
+  contain many unlabelled frames), and continuous (streaming) recognition.
+\end{enumerate}

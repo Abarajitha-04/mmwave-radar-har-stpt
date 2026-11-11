@@ -1,0 +1,26 @@
+\begin{table}[t]
+\centering
+\caption{Ablation of STPT-Lite (no distillation): test accuracy (\%), mean\,$\pm$\,std over seeds (variants: 1/2 on RadHAR, 0 on MiliPoint; full model: 3), change w.r.t.\ the full model in brackets.}
+\label{tab:ablation}
+\setlength{\tabcolsep}{3pt}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lcc}
+\toprule
+Variant & RadHAR & MiliPoint (subj.) \\
+\midrule
+STPT-Lite (full, no KD) & 96.22\,$\pm$\,1.43 & 45.79\,$\pm$\,6.30 \\
+\midrule
+-- intra-segment attention (max+attentive pool only) & 96.90\,$\pm$\,0.18 (+0.68) & -- \\
+-- motion descriptor & 97.56\,$\pm$\,0.00 (+1.34) & -- \\
+-- temporal Transformer (mean over segments) & 96.27\,$\pm$\,0.00 (+0.05) & -- \\
+-- Doppler \& intensity ($xyz$ only) & 95.23\,$\pm$\,0.00 (-0.99) & -- \\
+-- spatial gating & 97.90\,$\pm$\,0.00 (+1.67) & -- \\
+-- person centring \& gating & -- & -- \\
+-- ROI filter & -- & -- \\
+-- all training augmentation & 96.30\,$\pm$\,0.00 (+0.07) & -- \\
+-- coordinate jitter augmentation & -- & -- \\
+$G{=}6$ segments $\times$ 64 pts & -- & -- \\
+$G{=}20$ segments $\times$ 20 pts & -- & -- \\
+\bottomrule
+\end{tabular}}
+\end{table}

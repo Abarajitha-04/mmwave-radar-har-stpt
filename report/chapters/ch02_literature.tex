@@ -1,0 +1,95 @@
+\chapter{Literature Review and Technology Investigation}
+
+\section{Radar-based HAR}
+Radar HAR has historically used micro-Doppler spectrograms or range-Doppler maps;
+Ullmann et al.\ \cite{ullmann2023survey} survey continuous radar HAR. Low-cost
+single-chip radars output point clouds directly, which made point-cloud HAR
+popular. RadHAR \cite{singh2019radhar} recorded five activities with a TI
+IWR1443 and compared an SVM, an MLP, a BiLSTM and a time-distributed CNN+BiLSTM
+on $10\times32\times32$ voxel grids; the CNN+BiLSTM performed best (90.47\%).
+Table~\ref{tab:litreport} lists the later work we reviewed.
+
+\begin{table}[h]
+\centering
+\caption{Reviewed mmWave point-cloud HAR literature (accuracies as reported by the authors under their own protocols).}
+\label{tab:litreport}
+\small
+\begin{tabular}{L{3.0cm}L{4.6cm}L{2.2cm}L{3.6cm}}
+\toprule
+Work & Method & Reported & Note \\
+\midrule
+RadHAR 2019 \cite{singh2019radhar} & Voxels + TD-CNN + BiLSTM & 90.47\% (RadHAR) & dataset paper; window-level validation \\
+MMPoint-GNN 2021 \cite{gong2021mmpointgnn} & dynamic-edge GNN per frame & -- & graph on sparse frames \\
+Lee \& Kim 2022 \cite{lee2022gnn} & GNN with pre-trained 3-D joints & 96.55\% (RadHAR) & needs joint supervision \\
+Tesla-Rapture 2023 \cite{salami2023tesla} & light temporal graph model & gestures & sparse radar point clouds \\
+Pantomime 2021 \cite{palipana2021pantomime} & point-cloud gesture recogniser & gestures & sparse mmWave clouds \\
+Gu et al.\ 2024 \cite{gu2024lpn} & Lite-PointNet + BiLiLSTM & 95.12\% (RadHAR) & 79.7\,K params \\
+Lim et al.\ 2024 \cite{lim2024fpga} & pillars + DS-CNN, 4-bit FPGA & 94.79\% (own data) & 22.3\,K params \\
+MAK-GCN 2025 \cite{zakka2025makgcn} & multi-head adaptive graph conv. & 97.54\% RadHAR; 98.25\% MiliPoint & random 80/10/10 on MiliPoint \\
+OG-PCL 2025 \cite{yan2025ogpcl} & occupancy-gated convolution & 91.75\% (RadHAR) & 5-fold CV; 0.83\,M params \\
+Star graph 2025 \cite{gao2025star} & star graph around virtual centre & 94.27\% (own data) & subject-wise split \\
+MiliPoint 2023 \cite{cui2023milipoint} & benchmark (DGCNN, PointNet++, \ldots) & 34.45\% (49 actions) & dataset paper \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Point-cloud architectures}
+\textbf{PointNet} \cite{qi2017pointnet} applies a shared MLP to every point and
+max-pools the results, which gives a permutation-invariant set function. It is
+cheap, but it has no notion of local neighbourhoods. \textbf{PointNet++}
+\cite{qi2017pointnet2} adds hierarchical set abstraction: farthest-point sampling
+(FPS) picks centroids, a ball query groups the neighbours of each centroid, and a
+mini-PointNet runs on every group. \textbf{DGCNN} \cite{wang2019dgcnn} builds a
+$k$-NN graph dynamically in feature space and applies edge convolutions.
+\textbf{Point Transformer} \cite{zhao2021pt} replaces convolution with vector
+self-attention over $k$-NN neighbourhoods, using relative positional encodings.
+PCT \cite{guo2021pct}, PTv2/PTv3 \cite{wu2022ptv2,wu2024ptv3}, PointNeXt
+\cite{qian2022pointnext} and PointMLP \cite{ma2022pointmlp} extend these ideas.
+P4Transformer \cite{fan2021p4t} handles point-cloud \emph{videos} with
+spatio-temporal tubes. All of these assume dense clouds (hundreds to thousands of
+points) and depend on FPS and $k$-NN, whose cost grows quadratically or worse
+with the number of points and which map poorly to micro-controllers.
+
+\section{Noise-handling approaches}
+Typical radar point-cloud pipelines use static-clutter removal (often inside the
+radar firmware), range or angle region-of-interest filters, statistical or radius
+outlier removal, DBSCAN clustering to isolate a person, and multi-frame
+accumulation to counter sparsity \cite{singh2019radhar,salami2023tesla}. On the
+learning side, point dropout, jitter and random resampling are standard
+augmentations for point-cloud networks \cite{qi2017pointnet,qi2017pointnet2}.
+
+\section{Lightweight models}
+Knowledge distillation \cite{hinton2015kd} trains a small student to match a
+large teacher's softened outputs. Quantisation \cite{jacob2018quant} reduces the
+weights (and optionally the activations) to 8 bits. Lim et al.\
+\cite{lim2024fpga} show that 4-bit radar HAR runs on FPGAs.
+
+\section{Research gap}
+\begin{enumerate}[nosep]
+\item Radar-specific structure (extreme sparsity, a direct Doppler measurement,
+  static clutter) is rarely exploited explicitly. Most models reuse dense-point
+  backbones or voxel grids.
+\item Protocols are inconsistent and frequently leaky (window-level random
+  splits), so published numbers are not comparable.
+\item Robustness to radar disturbances, cross-dataset transfer and edge cost are
+  rarely reported together.
+\end{enumerate}
+
+\section{Technology alternatives}
+\begin{table}[h]
+\centering
+\caption{Technology choices and alternatives considered.}
+\label{tab:tech}
+\small
+\begin{tabular}{L{2.6cm}L{3.2cm}L{3.4cm}L{5.0cm}}
+\toprule
+Need & Chosen & Alternatives & Reason \\
+\midrule
+DL framework & PyTorch 2.15 & TensorFlow/Keras (used by RadHAR) & dynamic graphs, simple custom attention; course familiarity \\
+Point ops & pure PyTorch (own FPS, ball query, $k$-NN) & PyTorch Geometric, torch-cluster & PyG/torch-cluster need compiled CUDA/CPU wheels; one dependency-free implementation runs everywhere \\
+Demo & Streamlit + Plotly & Gradio, Flask + JS & fastest route to an interactive 3-D app; built-in test harness (AppTest) \\
+Paper/report & \LaTeX\ (IEEEtran / report) & Word & exact IEEE template, reproducible tables generated from results \\
+Statistics & SciPy exact binomial (McNemar), bootstrap & $t$-tests on seeds & paired test on the same test windows is more powerful and makes fewer assumptions \\
+\bottomrule
+\end{tabular}
+\end{table}

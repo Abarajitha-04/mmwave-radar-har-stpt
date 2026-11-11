@@ -1,0 +1,32 @@
+\chapter{Testing and Quality Assurance}
+
+\section{Test strategy}
+\begin{longtable}{L{2.6cm}L{6.6cm}L{4.6cm}}
+\caption{Test levels.}\label{tab:testlevels}\\
+\toprule
+Level & What is tested & How \\
+\midrule\endfirsthead
+\toprule Level & What is tested & How \\ \midrule\endhead
+Unit & parser on a real recording and on garbage; safe unpickler against a malicious pickle; every noise function (shape, determinism, no in-place change, effect size); every model's forward pass with empty segments & \texttt{pytest tests/} \\
+Data validation & split disjointness (RadHAR recordings, MiliPoint subjects); tensor shapes and finiteness; deterministic evaluation samples; train-only statistics & \texttt{pytest} + leakage audit \\
+Integration & exported bundle $\rightarrow$ raw recording $\rightarrow$ probabilities (sum to 1, deterministic); short input rejected & \texttt{pytest}, CLI \\
+Checkpoint & bundle reload without retraining; seed selected by validation & CLI + demo \\
+Application & app start, sample loading, preprocessing view, inference, all 7 noise conditions, sample switching, error handling & Streamlit \texttt{AppTest}, headless-browser screenshots \\
+Performance & latency (median of 200, batch 1, 1 thread), FLOPs, model size & \texttt{train.py} \\
+Reproducibility & identical robustness results on repeated evaluation & robustness determinism check \\
+\bottomrule
+\end{longtable}
+
+\section{Results}
+\input{../paper/generated/test_results.tex}
+
+\section{Quality-assurance matrix}
+\begin{longtable}{L{3.0cm}L{6.2cm}L{2.6cm}L{2.2cm}}
+\caption{Final quality-assurance matrix (evidence-based).}\label{tab:qa}\\
+\toprule
+Area & Check & Evidence & Status \\
+\midrule\endfirsthead
+\toprule Area & Check & Evidence & Status \\ \midrule\endhead
+\csname @@input\endcsname ../paper/generated/qa_rows.tex 
+\bottomrule
+\end{longtable}

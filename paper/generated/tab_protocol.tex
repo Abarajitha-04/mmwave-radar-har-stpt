@@ -1,0 +1,17 @@
+\begin{table}[t]
+\centering
+\caption{MiliPoint (49 actions) top-1 accuracy (\%) of the same models under three splits. Published numbers: 34.45 (PointNet++, \cite{cui2023milipoint}) and 98.25 (MAK-GCN, random 80/10/10, \cite{zakka2025makgcn}).}
+\label{tab:protocol}
+\setlength{\tabcolsep}{3pt}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lccc}
+\toprule
+Model & Subject-disjoint & Chronological & Random windows \\
+ & (ours, primary) & (MiliPoint code) & (leaky) \\
+\midrule
+STPT-Lite & 45.79\,$\pm$\,6.30 & -- & -- \\
+PointNet & 32.57\,$\pm$\,4.59 & -- & -- \\
+PointNet++ & 8.07\,$\pm$\,5.47 & -- & -- \\
+\bottomrule
+\end{tabular}}
+\end{table}

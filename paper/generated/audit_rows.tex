@@ -1,0 +1,11 @@
+RadHAR recording overlap (train/val, train/test, val/test) & [0, 0, 0] & PASS \\
+RadHAR identical-content recordings & 0 groups & PASS \\
+RadHAR identical frames ($\geq$5 pts) across splits & [0, 0, 0] of 167,610 frames & PASS \\
+RadHAR windows of one recording in two splits & [0, 0, 0] & PASS \\
+Intensity statistics fitted on train only & recomputed = used: True & PASS \\
+RadHAR subject independence & no subject IDs in dataset & NOT VERIFIABLE \\
+RadHAR session independence & test-to-train gap min 2\,s, median 29\,s; same 4 days & NOT INDEPENDENT \\
+MiliPoint subject-disjoint: subject overlap; test frames inside training windows & none; 0 / 49,764 (0.0\%) & PASS \\
+MiliPoint chronological: subject overlap; test frames inside training windows & train/test: [0, 8]; 0 / 20,532 (0.0\%) & SUBJECT OVERLAP \\
+MiliPoint random windows: subject overlap; test frames inside training windows & n/a; 43,704 / 59,952 (72.9\%) & LEAKY \\
+Checkpoint = argmax validation macro-F1 & 0 / 0 runs & FAIL \\

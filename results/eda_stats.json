@@ -1,0 +1,88 @@
+{
+ "radhar": {
+  "recordings": {
+   "train": 113,
+   "val": 29,
+   "test": 58
+  },
+  "pts_per_frame_mean": 21.39583731029875,
+  "pts_per_frame_median": 21.0,
+  "roi_removed_frac": 0.3458880483151679,
+  "frame_rate_hz": 17.18716431536898,
+  "xyz_min": [
+   0.001953125,
+   -5.203125,
+   -8.181640625
+  ],
+  "xyz_max": [
+   55.65625,
+   3.54296875,
+   40.505859375
+  ],
+  "example_window": {
+   "raw": 1140,
+   "roi_removed": 455,
+   "gated_removed": 271,
+   "kept": 414
+  },
+  "gate_removed_frac_after_roi": 0.5008935747738315,
+  "windows": {
+   "train(stride20)": [
+    1075,
+    852,
+    828,
+    796,
+    1222
+   ],
+   "val": [
+    275,
+    638,
+    583,
+    828,
+    385
+   ],
+   "test": [
+    714,
+    673,
+    734,
+    674,
+    770
+   ]
+  }
+ },
+ "milipoint": {
+  "runs": 1139,
+  "labelled_frames": 212920,
+  "pts_per_frame_mean": 6.492368025549502,
+  "pts_per_frame_median": 6.0,
+  "frames_per_subject": {
+   "0": 38589,
+   "1": 31617,
+   "2": 26184,
+   "3": 12265,
+   "4": 26125,
+   "5": 5618,
+   "6": 8274,
+   "7": 12120,
+   "8": 26041,
+   "9": 13160,
+   "10": 12927
+  },
+  "split_runs": {
+   "train": 761,
+   "val": 105,
+   "test": 273
+  },
+  "subject_split": {
+   "test": [
+    8,
+    9,
+    10
+   ],
+   "val": [
+    6,
+    7
+   ]
+  }
+ }
+}

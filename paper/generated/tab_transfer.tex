@@ -1,0 +1,19 @@
+\begin{table}[t]
+\centering
+\caption{Cross-dataset transfer (STPT-Lite, $xyz$ input): test accuracy (\%) when fine-tuning on a fraction of target training recordings/runs, from scratch vs.\ initialised from the model trained on the other dataset (mean\,$\pm$\,std, 3 seeds).}
+\label{tab:transfer}
+\setlength{\tabcolsep}{3pt}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{llcc}
+\toprule
+Direction & Target data & Scratch & Pre-trained \\
+\midrule
+MiliPoint $\rightarrow$ RadHAR & 10\% & -- & -- \\
+MiliPoint $\rightarrow$ RadHAR & 25\% & -- & -- \\
+MiliPoint $\rightarrow$ RadHAR & 100\% & 95.23\,$\pm$\,0.00 & -- \\
+\midrule
+RadHAR $\rightarrow$ MiliPoint & 25\% & -- & -- \\
+RadHAR $\rightarrow$ MiliPoint & 100\% & 45.79\,$\pm$\,6.30 & -- \\
+\bottomrule
+\end{tabular}}
+\end{table}

@@ -1,0 +1,113 @@
+\chapter{Model Selection and Architecture}
+\label{ch:model}
+
+\section{Candidate architectures}
+\textbf{PointNet} \cite{qi2017pointnet}: $f(\{\mathbf{p}_i\})=\gamma(\max_i h(\mathbf{p}_i))$,
+where $h$ is a shared MLP and $\gamma$ a classifier. The max is permutation-invariant.
+It is cheap, but no local geometry is modelled.
+\textbf{PointNet++} \cite{qi2017pointnet2}: set-abstraction levels, each consisting
+of FPS sampling of $n'$ centroids, a ball query (radius $r$, at most $k$
+neighbours) and a PointNet on every local group.
+\textbf{DGCNN} \cite{wang2019dgcnn}: EdgeConv
+$\mathbf{h}_i'=\max_{j\in\mathcal{N}_k(i)}\phi(\mathbf{h}_j-\mathbf{h}_i,\mathbf{h}_i)$
+over a $k$-NN graph that is recomputed in feature space at every layer.
+\textbf{Point Transformer} \cite{zhao2021pt}: vector attention
+$\mathbf{y}_i=\sum_{j\in\mathcal{N}_k(i)}\rho(\gamma(\varphi(\mathbf{x}_i)-\psi(\mathbf{x}_j)+\delta_{ij}))\odot(\alpha(\mathbf{x}_j)+\delta_{ij})$
+with relative position encoding $\delta_{ij}=\theta(\mathbf{p}_i-\mathbf{p}_j)$.
+\textbf{PointNet+BiLSTM}: a PointNet per temporal segment followed by a BiLSTM, as
+in recent radar HAR work \cite{gu2024lpn}.
+\textbf{Voxel TD-CNN+BiLSTM}: the RadHAR baseline \cite{singh2019radhar}.
+
+\section{Selection rationale}
+The brief names a lightweight point transformer as the primary direction,
+provided the evidence supports it. Our design starts from the established parts,
+namely Transformer self-attention \cite{vaswani2017attention}, relative-position
+attention on points \cite{zhao2021pt} and PointNet-style pooling
+\cite{qi2017pointnet}, and adapts them to the structure of the radar data:
+\begin{enumerate}[nosep]
+\item Sparse frames but strong temporal order $\Rightarrow$ attention is
+  \emph{factorised}: first within short segments (spatial), then across segment
+  tokens (temporal). This removes FPS and $k$-NN entirely.
+\item Radar measures velocity $\Rightarrow$ an explicit per-segment motion
+  descriptor is added to every token.
+\item Edge cost $\Rightarrow$ width $d=64$, 2 temporal blocks, distillation from a
+  wider teacher, INT8 weights.
+\end{enumerate}
+\textbf{Established vs.\ project-specific.} Multi-head self-attention, the
+pre-norm Transformer block, the [CLS] token, attentive/max pooling, knowledge
+distillation and per-channel weight quantisation are established techniques.
+Project-specific are: the factorisation into intra-segment and inter-segment
+attention for radar windows, the learned 3-D relative-position \emph{bias} inside
+segments, the radar motion descriptor, and the moving-point centring and gating
+pre-processing. Every project-specific component is ablated in
+Table~\ref{tab:ablation}.
+
+\section{Layer-by-layer architecture of STPT-Lite}
+\begin{longtable}{L{3.6cm}L{3.0cm}L{3.0cm}L{4.6cm}r}
+\caption{STPT-Lite layers (batch $B$, $G=12$, $P=32$, $d=64$, $H=4$ heads, $K$ classes). Parameter counts for $K=5$.}\label{tab:layers}\\
+\toprule
+Layer & Input & Output & Operation & Params \\
+\midrule\endfirsthead
+\toprule Layer & Input & Output & Operation & Params \\ \midrule\endhead
+Point embedding & $B G P\times6$ & $BGP\times64$ & Linear--LN--GELU--Linear--LN--GELU & 4{,}864 \\
+Intra-segment attention & $(BG)\times P\times64$ & same & pre-LN, QKV linear, softmax$(QK^\top/\sqrt{16}+\beta(\Delta\mathbf{p})+\log m)V$, output proj. & 16{,}768 \\
+Relative-position bias $\beta$ & $P\times P\times3$ & $P\times P\times4$ & MLP $3\!\to\!16\!\to\!H$ & 132 \\
+Feed-forward & $(BG)P\times64$ & same & LN, Linear $64\!\to\!128$, GELU, Linear $128\!\to\!64$, residual & 16{,}704 \\
+Segment pooling & $(BG)\times P\times64$ & $(BG)\times64$ & attentive pool $\|$ masked max $\to$ Linear $128\!\to\!64$ & 8{,}321 \\
+Motion descriptor & $B\times G\times8$ & $B\times G\times64$ & MLP $8\!\to\!32\!\to\!64$, added to tokens & 2{,}464 \\
+{[CLS]} + positions & $B\times G\times64$ & $B\times13\times64$ & concatenate, add learned positions & 896 \\
+Temporal block $\times2$ & $B\times13\times64$ & same & pre-LN MHSA ($H=4$, key padding mask) + FFN ($2d$) & 66{,}944 \\
+Head & $B\times64$ & $B\times K$ & LN on [CLS], dropout 0.2, Linear & 453 \\
+\midrule
+Total & & & & 117{,}546 \\
+\bottomrule
+\end{longtable}
+
+The motion descriptor of segment $g$ is
+$\mathbf{u}_g=[\bar{\mathbf{x}}_g,\ \bar{\mathbf{x}}_g-\bar{\mathbf{x}}_{g-1},\ \overline{|v|}_g,\ \log(1+n_g)]$,
+i.e.\ centroid (3), centroid displacement (3), mean absolute Doppler (1) and log
+point count (1).
+
+\section{Computational complexity}
+Joint self-attention over all $N=GP=384$ points of a window costs
+$O(N^2d)\approx9.4$\,M multiply-adds per layer. The factorised design costs
+$O(GP^2d+G^2d)\approx0.8$\,M + 0.01\,M. Measured with PyTorch's FLOP counter, the
+whole model needs \oursMflops\,MFLOPs per 2-s window. PointNet++, DGCNN and Point
+Transformer additionally spend time on FPS loops and $k$-NN/ball queries, which
+are sequential or $O(N^2)$ (Table~\ref{tab:radhar}).
+
+\section{Training variants and final model selection}
+Three training variants of STPT-Lite were compared under identical settings:
+plain training, knowledge distillation from STPT-Large (KD), and KD combined with
+noise-robust augmentation (Section~\ref{sec:aug}; \texttt{src/noise.py:robust\_augment}:
+per batch, with probability 0.5 each, variable density with minimum keep 0.3,
+dropout up to 20\%, false detections up to 10\%, and with probability 0.25 the
+loss of one segment). Jitter and extreme sparsity are not used in training, so they
+remain unseen corruption types at test time. The final model was selected on
+\emph{validation} macro-F1 averaged over seeds on both datasets (Issue~\#39):
+KD+robust had the highest mean validation macro-F1 on RadHAR and on MiliPoint, and
+it is the model that is exported, served by the demo and reported as ``proposed''.
+Test accuracy was not used for this choice.
+
+\section{Variants}
+\begin{table}[h]
+\centering
+\caption{Model variants used in the experiments (parameters for 5 / 49 classes).}
+\label{tab:variants}
+\small
+\begin{tabular}{L{3.4cm}L{6.4cm}r r}
+\toprule
+Model & Configuration & Params (5) & Params (49) \\
+\midrule
+STPT-Large (teacher) & $d=128$, 4 temporal blocks, 8 heads & 725{,}262 & 730{,}938 \\
+STPT-Lite (proposed) & $d=64$, 2 blocks, 4 heads & 117{,}546 & 120{,}406 \\
+STPT-Tiny & $d=32$, 2 blocks, 4 heads & 30{,}682 & 32{,}134 \\
+PointNet & MLP 64-128-256, max-pool & 76{,}229 & 81{,}905 \\
+PointNet+BiLSTM & per-segment PointNet 64-128, BiLSTM 64 & 109{,}125 & 114{,}801 \\
+PointNet++ (SSG) & SA(128, 0.3\,m, 16) -- SA(32, 0.6\,m, 16) -- global & 413{,}381 & 424{,}689 \\
+DGCNN & 3 EdgeConv ($k=16$), 128 points & 422{,}405 & 433{,}713 \\
+Point Transformer & 2 PT blocks + transition down, 128 points & 335{,}237 & 340{,}913 \\
+Voxel TD-CNN+BiLSTM & $10\times32\times32$ voxels, 3-D conv 8/16/16, BiLSTM 16 & 45{,}861 & 47{,}313 \\
+\bottomrule
+\end{tabular}
+\end{table}
