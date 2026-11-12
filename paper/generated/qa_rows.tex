@@ -1,25 +1,25 @@
-C1 Literature & $\geq$15 papers 2022--26 (16 of 40 references) & \texttt{\footnotesize paper/refs.bib} & \textbf{PASS} \\
-C1 Gap & Research gap and contributions stated & \texttt{\footnotesize paper Sec. I--II} & \textbf{PASS} \\
-C2 Datasets & Both datasets parsed and used & \texttt{\footnotesize results/eda\_stats.json} & \textbf{PASS} \\
-C2 EDA & EDA and pre-processing figures & \texttt{\footnotesize figures/eda\_*, preproc\_*} & \textbf{PASS} \\
-C2 Leakage & Automated audit: splits disjoint, train-only statistics & \texttt{\footnotesize docs/leakage\_audit.md} & \textbf{FAIL} \\
-C3 Model & Proposed model implemented, diagram & \texttt{\footnotesize src/models.py, figures/arch.pdf} & \textbf{PASS} \\
-C4 Baselines & $\geq$3 baselines incl. SOTA (6 re-trained) & \texttt{\footnotesize results/summary\_radhar.csv} & \textbf{PASS} \\
-C4 Seeds & Proposed model, 3 seeds per dataset (3/3) & \texttt{\footnotesize results/all\_runs.csv} & \textbf{PASS} \\
-C4 Statistics & McNemar (Holm) and bootstrap CI & \texttt{\footnotesize results/stats.json} & \textbf{PASS} \\
-C4 Cross-dataset & MiliPoint$\rightarrow$RadHAR transfer & \texttt{\footnotesize results/summary\_transfer.csv} & \textbf{FAIL} \\
-C4 Ablation & Component ablation & \texttt{\footnotesize results/summary\_ablation.csv} & \textbf{PASS} \\
-Robustness & 7 perturbation types, 3 severities, both datasets & \texttt{\footnotesize results/robustness\_*.csv} & \textbf{FAIL} \\
-Training & Loss/accuracy/LR logged every epoch for every run & \texttt{\footnotesize results/runs/*/history.csv} & \textbf{PASS} \\
-Metrics & Accuracy, macro P/R/F1, per-class, top-3, latency, size & \texttt{\footnotesize metrics.json} & \textbf{PASS} \\
-C5 XAI & Attention, occlusion, saliency, t-SNE & \texttt{\footnotesize results/xai.json} & \textbf{PASS} \\
-Checkpoint & Exported model + inference script & \texttt{\footnotesize checkpoints/, src/inference.py} & \textbf{PASS} \\
-Tests & pytest (23 passed, 0 failed) & \texttt{\footnotesize results/pytest.log} & \textbf{PASS} \\
-C7 Demo & Streamlit demo, headless test (28 steps, 0 failed) & \texttt{\footnotesize results/apptest.json} & \textbf{PASS} \\
-C7 Demo video & Screen recording of the live demo & \texttt{\footnotesize figures/demo/demo.mp4} & \textbf{PASS} \\
-Config & Hyper-parameters in a config file & \texttt{\footnotesize configs/default.yaml} & \textbf{PASS} \\
-Documentation & README, DEVLOG, reproduction script & \texttt{\footnotesize README.md, docs/} & \textbf{PASS} \\
-No placeholders & No pending text in paper or report sources & \texttt{\footnotesize grep PENDINGTEXT} & \textbf{FAIL} \\
-C6 Paper & Compiled / built and inspected page by page & \texttt{\footnotesize paper/main.pdf} & \textbf{PASS} \\
-Report & Compiled / built and inspected page by page & \texttt{\footnotesize report/report.pdf} & \textbf{FAIL} \\
-C7 Slides & Compiled / built and inspected page by page & \texttt{\footnotesize presentation/Team10\_mmWave\_HAR.pptx} & \textbf{PASS} \\
+C1 Literature & $\geq$15 papers 2022--26 (16 of 40 references) & {\footnotesize\ttfamily paper/\allowbreak{}refs.bib} & \textbf{PASS} \\
+C1 Gap & Research gap and contributions stated & {\footnotesize\ttfamily paper Sec. I--II} & \textbf{PASS} \\
+C2 Datasets & Both datasets parsed and used & {\footnotesize\ttfamily results/\allowbreak{}eda\_\allowbreak{}stats.json} & \textbf{PASS} \\
+C2 EDA & EDA and pre-processing figures & {\footnotesize\ttfamily figures/\allowbreak{}eda\_\allowbreak{}*, preproc\_\allowbreak{}*} & \textbf{PASS} \\
+C2 Leakage & Automated audit: splits disjoint, train-only statistics & {\footnotesize\ttfamily docs/\allowbreak{}leakage\_\allowbreak{}audit.md} & \textbf{PASS} \\
+C3 Model & Proposed model implemented, diagram & {\footnotesize\ttfamily src/\allowbreak{}models.py, figures/\allowbreak{}arch.pdf} & \textbf{PASS} \\
+C4 Baselines & $\geq$3 baselines incl. SOTA (6 re-trained) & {\footnotesize\ttfamily results/\allowbreak{}summary\_\allowbreak{}radhar.csv} & \textbf{PASS} \\
+C4 Seeds & Proposed model, 3 seeds per dataset (3/3) & {\footnotesize\ttfamily results/\allowbreak{}all\_\allowbreak{}runs.csv} & \textbf{PASS} \\
+C4 Statistics & McNemar (Holm) and bootstrap CI & {\footnotesize\ttfamily results/\allowbreak{}stats.json} & \textbf{PASS} \\
+C4 Cross-dataset & MiliPoint$\rightarrow$RadHAR transfer & {\footnotesize\ttfamily results/\allowbreak{}summary\_\allowbreak{}transfer.csv} & \textbf{PASS} \\
+C4 Ablation & Component ablation & {\footnotesize\ttfamily results/\allowbreak{}summary\_\allowbreak{}ablation.csv} & \textbf{PASS} \\
+Robustness & 7 perturbation types, 3 severities, both datasets & {\footnotesize\ttfamily results/\allowbreak{}robustness\_\allowbreak{}*.csv} & \textbf{PASS} \\
+Training & Loss/accuracy/LR logged every epoch for every run & {\footnotesize\ttfamily results/\allowbreak{}runs/\allowbreak{}*/\allowbreak{}history.csv} & \textbf{PASS} \\
+Metrics & Accuracy, macro P/R/F1, per-class, top-3, latency, size & {\footnotesize\ttfamily metrics.json} & \textbf{PASS} \\
+C5 XAI & Attention, occlusion, saliency, t-SNE & {\footnotesize\ttfamily results/\allowbreak{}xai.json} & \textbf{PASS} \\
+Checkpoint & Exported model + inference script & {\footnotesize\ttfamily checkpoints/\allowbreak{}, src/\allowbreak{}inference.py} & \textbf{PASS} \\
+Tests & pytest (23 passed, 0 failed) & {\footnotesize\ttfamily results/\allowbreak{}pytest.log} & \textbf{PASS} \\
+C7 Demo & Streamlit demo, headless test (28 steps, 0 failed) & {\footnotesize\ttfamily results/\allowbreak{}apptest.json} & \textbf{PASS} \\
+C7 Demo video & Screen recording of the live demo & {\footnotesize\ttfamily figures/\allowbreak{}demo/\allowbreak{}demo.mp4} & \textbf{PASS} \\
+Config & Hyper-parameters in a config file & {\footnotesize\ttfamily configs/\allowbreak{}default.yaml} & \textbf{PASS} \\
+Documentation & README, DEVLOG, reproduction script & {\footnotesize\ttfamily README.md, docs/\allowbreak{}} & \textbf{PASS} \\
+No placeholders & No pending text in paper or report sources & {\footnotesize\ttfamily placeholder grep} & \textbf{PASS} \\
+C6 Paper & Compiled / built and inspected page by page & {\footnotesize\ttfamily paper/\allowbreak{}main.pdf} & \textbf{PASS} \\
+Report & Compiled / built and inspected page by page & {\footnotesize\ttfamily report/\allowbreak{}report.pdf} & \textbf{PASS} \\
+C7 Slides & Compiled / built and inspected page by page & {\footnotesize\ttfamily presentation/\allowbreak{}Team10\_\allowbreak{}mmWave\_\allowbreak{}HAR.pptx} & \textbf{PASS} \\

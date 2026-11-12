@@ -1,0 +1,20 @@
+\begin{table}[h]
+\centering
+\caption{Robustness on MiliPoint (unseen subjects): test accuracy (\%) / prediction stability (\% of predictions unchanged w.r.t.\ clean), mean over seeds.}
+\label{tab:robmilipoint}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lccccc}
+\toprule
+Condition (level) & PointNet & PointNet+rob. & PointNet++ & STPT+KD & STPT+KD+rob. \\
+\midrule
+clean (0) & 32.6 / 100 & 18.7 / 100 & 14.2 / 100 & 48.5 / 100 & 49.6 / 100 \\
+jitter (0.05) & 26.3 / 62 & 15.7 / 66 & 11.0 / 31 & 39.6 / 69 & 42.0 / 74 \\
+dropout (0.3) & 31.6 / 73 & 19.0 / 69 & 13.1 / 53 & 46.3 / 77 & 47.3 / 80 \\
+sparsity (0.25) & 22.5 / 35 & 14.8 / 29 & 8.4 / 20 & 24.0 / 29 & 29.4 / 38 \\
+outliers (0.1) & 21.6 / 42 & 16.5 / 63 & 8.8 / 21 & 41.9 / 70 & 45.0 / 77 \\
+density (0.25) & 28.9 / 57 & 18.2 / 50 & 11.3 / 38 & 40.1 / 58 & 43.3 / 64 \\
+frameloss (0.5) & 24.7 / 44 & 15.8 / 38 & 11.6 / 30 & 37.6 / 59 & 39.0 / 61 \\
+combined (2) & 17.9 / 30 & 13.8 / 36 & 8.2 / 14 & 29.9 / 44 & 33.0 / 51 \\
+\bottomrule
+\end{tabular}}
+\end{table}

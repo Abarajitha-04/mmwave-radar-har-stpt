@@ -22,7 +22,7 @@ python scripts/eda.py
 \begin{lstlisting}[numbers=none]
 # one run
 python src/train.py --data radhar --model stpt_lite --seed 0 \
-       --teacher results/runs/rh_stpt_teacher_s0 --tag rh_stpt_lite_kd_s0
+       --teacher results/runs/rh_stpt_teacher_s0 --robust 1 --tag rh_stpt_lite_kd_robust_s0
 # all runs of the study (2 parallel workers)
 python scripts/runner.py scripts/jobs_main.txt 2
 # tables, statistics, robustness, explainability, audit
@@ -35,8 +35,8 @@ python -m pytest -q tests
 
 \section{Inference and demonstration}
 \begin{lstlisting}[numbers=none]
-python scripts/export_model.py rh_stpt_lite_kd checkpoints/stpt_lite_kd_radhar radhar
-python src/inference.py --bundle checkpoints/stpt_lite_kd_radhar \
+python scripts/export_model.py rh_stpt_lite_kd_robust checkpoints/stpt_lite_radhar radhar
+python src/inference.py --bundle checkpoints/stpt_lite_radhar \
        --input demo/samples/radhar_test_walk.txt
 streamlit run demo/app.py
 \end{lstlisting}

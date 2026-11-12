@@ -1,1 +1,17 @@
-PENDINGTEXT ablation_text
+\textbf{MiliPoint (unseen people)} is the informative benchmark for the
+architecture. Compared with the full model trained with the same two seeds
+(49.4\% on average), removing the temporal Transformer (mean over segment
+tokens instead) costs 11.9 points, and removing the intra-segment attention
+(pooling only) costs 6.5 points. Both losses hold in each seed separately.
+Fine-grained actions are therefore distinguished both by how the returns of a
+short segment relate to each other and by how the segments evolve over the
+window. The explicit motion descriptor brings no measurable gain (+0.5 points on
+average, +2.8 and $-$1.8 in the two seeds): the attention layers apparently
+recover centroid and displacement information from the point coordinates
+themselves. We keep the descriptor because it costs only 2.5\,K parameters (2\% of the model), but
+we do not claim it as a contribution to accuracy. \textbf{RadHAR} cannot rank
+components. Every variant, including removing Doppler/intensity, gating or
+augmentation, lies within about 1.7 points of the full model, inside its
+seed spread ($\pm$1.4), because every model already exceeds 95\%. The
+effect of the pre-processing is visible across models instead: with the same gating
+and centring, all baselines exceed the published 90.47\%.

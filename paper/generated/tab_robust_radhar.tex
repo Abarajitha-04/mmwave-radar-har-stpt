@@ -1,0 +1,20 @@
+\begin{table}[h]
+\centering
+\caption{Robustness on RadHAR: test accuracy (\%) / prediction stability (\% of predictions unchanged w.r.t.\ clean), mean over seeds.}
+\label{tab:robradhar}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lccccc}
+\toprule
+Condition (level) & PointNet & PointNet+rob. & PointNet++ & STPT+KD & STPT+KD+rob. \\
+\midrule
+clean (0) & 96.3 / 100 & 97.4 / 100 & 97.5 / 100 & 96.0 / 100 & 96.8 / 100 \\
+jitter (0.05) & 96.2 / 98 & 96.9 / 99 & 97.0 / 99 & 95.6 / 99 & 96.7 / 99 \\
+dropout (0.3) & 95.8 / 99 & 97.1 / 99 & 96.9 / 99 & 95.5 / 99 & 96.4 / 99 \\
+sparsity (0.25) & 92.8 / 96 & 95.0 / 97 & 93.8 / 96 & 89.7 / 92 & 93.0 / 95 \\
+outliers (0.1) & 57.1 / 56 & 96.6 / 99 & 57.0 / 57 & 59.9 / 60 & 72.5 / 72 \\
+density (0.25) & 95.1 / 98 & 96.5 / 99 & 96.4 / 98 & 94.2 / 98 & 95.8 / 98 \\
+frameloss (0.5) & 93.7 / 96 & 95.2 / 97 & 94.6 / 96 & 94.6 / 97 & 95.6 / 98 \\
+combined (2) & 56.0 / 55 & 95.5 / 98 & 57.5 / 57 & 60.5 / 61 & 72.3 / 72 \\
+\bottomrule
+\end{tabular}}
+\end{table}

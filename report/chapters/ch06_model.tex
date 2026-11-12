@@ -74,7 +74,7 @@ $O(N^2d)\approx9.4$\,M multiply-adds per layer. The factorised design costs
 $O(GP^2d+G^2d)\approx0.8$\,M + 0.01\,M. Measured with PyTorch's FLOP counter, the
 whole model needs \oursMflops\,MFLOPs per 2-s window. PointNet++, DGCNN and Point
 Transformer additionally spend time on FPS loops and $k$-NN/ball queries, which
-are sequential or $O(N^2)$ (Table~\ref{tab:radhar}).
+are sequential or $O(N^2)$ (Table~\ref{tab:radharreport}).
 
 \section{Training variants and final model selection}
 Three training variants of STPT-Lite were compared under identical settings:

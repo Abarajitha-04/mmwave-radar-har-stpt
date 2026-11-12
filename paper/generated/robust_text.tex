@@ -1,1 +1,26 @@
-PENDINGTEXT robust_text
+Fig.~\ref{fig:robust} reports test accuracy under seven perturbation types,
+three severities each, applied with fixed seeds so that every model sees the
+same perturbed windows. \textbf{MiliPoint (unseen people).} The proposed model
+stays the most accurate under every condition except the most extreme
+sparsity. Noise-robust training improves STPT-Lite+KD under all perturbations,
+by 0.9--5.4 points (e.g.\ 20\% false detections: 34.6$\rightarrow$39.8\%; density
+0.1: 35.6$\rightarrow$39.6\%), including jitter, which was not used in training
+(22.8 vs.\ 20.5\% at $\sigma=10$\,cm). At 12.5\% of the returns kept (about one
+point per frame), STPT-Lite (13.9\%) falls to the level of PointNet (14.7\%): with
+almost no points per segment, intra-segment attention has nothing to attend to.
+\textbf{RadHAR.} Dropout, density changes and jitter up to 5\,cm cost every
+point-based model at most 2.5 points. Losing half of the segments costs DGCNN and
+Point Transformer about five points but the proposed model only 1.2 points
+(96.8$\rightarrow$95.6\%), which matches the even temporal attention in
+Section~\ref{sec:xai}. Two conditions separate the
+models. Under extreme sparsity, Point Transformer (92.4\%) and PointNet with
+robust training (91.1\%) degrade least, the proposed model reaches 80.0\%, and
+STPT-Lite+KD without robust training drops to 69.7\%. False detections are the
+main weakness of the STPT family on RadHAR: at 20\% injected outliers the
+proposed model keeps 55.1\% (39.3\% without robust training), whereas PointNet
+with the same robust training keeps 96.0\% and the voxel CNN-LSTM 93.7\%.
+A likely cause is that outliers corrupt the motion descriptor (centroid, mean Doppler) and receive
+attention weight, while a max-pooled PointNet with robust training learns to
+ignore isolated points and voxel occupancy dilutes them. Robust training
+therefore helps, but it does not close this gap. A robust centroid (median) in
+the motion descriptor and outlier-aware attention are the obvious next steps.

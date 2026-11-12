@@ -316,9 +316,9 @@ table(s, stRows, { x: MX + 7.8, y: TOP + 0.1, w: W - 2 * MX - 7.8, colW: [2.2, 1
 bullets(s, [`Proposed, seed 0: ${f2(SM['0'] ? SM['0'].ref_acc : null)} % [${SM['0'] ? f2(SM['0'].ref_ci[0]) : ''}, ${SM['0'] ? f2(SM['0'].ref_ci[1]) : ''}] (95 % bootstrap CI)`, 'Exact McNemar, Holm-corrected per seed; Signif. = seeds with p < 0.05'], { x: MX + 7.8, y: TOP + 0.6 + 0.42 * stRows.length, w: W - 2 * MX - 7.8, h: 1.6, fs: 14 });
 
 // =================================================================== 18 Robustness
-s = content('Noise robustness', N('M',
-  'Accuracy on the full test set under each perturbation and severity; identical perturbed samples for every model. Solid red is the proposed model (distillation + noise-robust training); dashed orange is the same model without noise-robust training; blue is PointNet, dashed blue PointNet with the same noise-robust training. Read the outlier and sparsity panels first: these are the conditions that hurt most. The prediction-stability metric (fraction of predictions unchanged) and per-class recall are in the result files and paper.',
-  [['Did noise-robust training help?', 'Compare the solid red and dashed orange lines; the paper reports the exact differences per condition, including where it did not help (extreme sparsity).'],
+s = content('Robust training helps; false detections remain a weakness', N('M',
+  'Accuracy on the full test set under each perturbation and severity; identical perturbed samples for every model. Findings. MiliPoint (right): the proposed model is the most accurate under every condition except extreme sparsity (12.5% of points kept, about one point per frame), where it falls to PointNet level; noise-robust training improves it under every perturbation by about 1 to 5 points, including jitter, which was not used in training. RadHAR (left): dropout, density and jitter up to 5 cm cost at most 2.5 points; losing half of the segments costs our model only 1.2 points. The weakness: at 20% injected false detections our model keeps 55% (39% without robust training) while PointNet with the same robust training keeps 96% and the voxel model 94%. Likely cause: outliers shift the centroid and Doppler statistics of the motion descriptor. We report this openly; a median-based descriptor is future work. Solid red is the proposed model (distillation + noise-robust training); dashed orange is the same model without noise-robust training; blue is PointNet, dashed blue PointNet with the same noise-robust training. Read the outlier and sparsity panels first: these are the conditions that hurt most. The prediction-stability metric (fraction of predictions unchanged) and per-class recall are in the result files and paper.',
+  [['Did noise-robust training help?', 'Compare the solid red and dashed orange lines; the paper reports the exact differences per condition, including where it did not help (extreme sparsity, outliers on RadHAR).'],
    ['Why not test on real noisy recordings?', 'No labelled noisy recordings exist for these datasets; controlled perturbations are the measurable alternative and are labelled as such.']]));
 img(s, FIG('robustness_radhar.png'), MX, TOP, (W - 2 * MX) / 2 - 0.1, 5.4, 'Robustness RadHAR');
 img(s, FIG('robustness_milipoint.png'), MX + (W - 2 * MX) / 2 + 0.1, TOP, (W - 2 * MX) / 2 - 0.1, 5.4, 'Robustness MiliPoint');
@@ -336,20 +336,24 @@ table(s, [['', 'Params (K)', 'MFLOPs', 'Latency (ms)', 'FP32 (MB)', 'INT8 (MB)',
 const AB = D.ablation;
 const ablAll = [['noattn', '− intra-segment attention'], ['nomotion', '− motion descriptor'], ['notemporal', '− temporal Transformer'],
   ['xyz', '− Doppler & intensity'], ['nogate', '− clutter gating'], ['augnone', '− all augmentation'], ['augnojitter', '− coordinate jitter']];
-const dAb = (k, d) => (AB[k] && AB[k][d] && AB[k][d][0] !== null && AB.full[d][0] !== null) ? +(AB[k][d][0] - AB.full[d][0]).toFixed(2) : null;
+const dAb = (k, d) => (AB[k] && AB[k]['d_' + d]) ? AB[k]['d_' + d][0] : null;
+const nAb = (d) => Math.max(0, ...Object.values(AB).map((v) => (v['d_' + d] ? v['d_' + d][1] : 0)));
 const mpAbl = ablAll.filter(([k]) => dAb(k, 'mp') !== null);
 const mpWorst = mpAbl.slice().sort((a, b) => dAb(a[0], 'mp') - dAb(b[0], 'mp'))[0];
-s = content(mpWorst ? `Ablation: ${mpWorst[1].replace('− ', 'removing the ')} costs ${Math.abs(dAb(mpWorst[0], 'mp')).toFixed(1)} points on unseen people` : 'Ablation study', N('M',
-  `Each bar removes one component of STPT-Lite (no distillation) and retrains; the bar is the change in test accuracy relative to the full model (RadHAR full: ${pm(AB.full.rh)}%, MiliPoint full: ${pm(AB.full.mp)}%). RadHAR is saturated: every change there lies within the seed spread of the full model (±${f2(AB.full.rh[1])}), so RadHAR cannot rank components. MiliPoint, with unseen people and 49 actions, is the informative benchmark for the architectural components; Doppler, gating and augmentation are RadHAR-specific inputs and are tested there only. The full table with standard deviations is in the paper.`,
+const r1 = (v) => (Math.round(Math.abs(v) * 10) / 10).toFixed(1);
+const capF = (t) => t.charAt(0).toUpperCase() + t.slice(1);
+s = content(mpWorst ? `${capF(mpWorst[1].replace('− ', ''))} removed: −${r1(dAb(mpWorst[0], 'mp'))} points on unseen people` : 'Ablation study', N('M',
+  `Each bar removes one component of STPT-Lite (no distillation) and retrains; the bar is the change in test accuracy relative to the full model trained with the same seeds (MiliPoint: ${nAb('mp')} seed(s), RadHAR: ${nAb('rh')}) (RadHAR full: ${pm(AB.full.rh)}%, MiliPoint full: ${pm(AB.full.mp)}%). RadHAR is saturated: every change there lies within the seed spread of the full model (±${f2(AB.full.rh[1])}), so RadHAR cannot rank components. MiliPoint, with unseen people and 49 actions, is the informative benchmark for the architectural components; Doppler, gating and augmentation are RadHAR-specific inputs and are tested there only. The full table with standard deviations is in the paper.`,
   [['Which component matters most?', mpWorst ? `On MiliPoint, ${mpWorst[1].replace('− ', '')}: removing it changes accuracy by ${dAb(mpWorst[0], 'mp')} points.` : 'See the paper table.'],
-   ['Some RadHAR variants are better than the full model. Why keep the component?', 'Those differences are inside the seed spread on a saturated benchmark; components are judged on MiliPoint, where the spread is smaller than the effects.']]));
+   ['Does the motion descriptor help?', 'Not measurably: on MiliPoint removing it changes accuracy by +0.5 points on average (+2.8 and -1.8 in the two seeds). We keep it because it costs only 2.5 K parameters, but we do not claim it as an accuracy contribution.'],
+   ['Some RadHAR variants are better than the full model. Why keep the component?', 'Those differences are inside the seed spread of a saturated benchmark (all models above 95%); components are judged on MiliPoint, where removing attention or the temporal Transformer costs 6.5 and 11.9 points in both seeds.']]));
 const ablChart = (d, rowsA, x, w, title, col) => { if (!rowsA.length) return;
   s.addChart(pres.charts.BAR, [{ name: title, labels: rowsA.map((a) => a[1]), values: rowsA.map(([k]) => dAb(k, d)) }],
     chartBase({ x, y: TOP, w, h: 5.4, barDir: 'bar', showValue: true, dataLabelPosition: 'outEnd', dataLabelFormatCode: '+0.0;-0.0;0.0',
-      chartColors: [col], showLegend: false, showTitle: true, title, catAxisLabelFontSize: 13 })); };
+      chartColors: [col], showLegend: false, showTitle: true, title, catAxisLabelFontSize: 13, catAxisLabelPos: 'low' })); };
 const rhAbl = ablAll.filter(([k]) => dAb(k, 'rh') !== null);
-ablChart('mp', mpAbl, MX, 5.9, 'MiliPoint, unseen people: Δ accuracy (points)', HEX.accent2);
-ablChart('rh', rhAbl, MX + 6.15, W - 2 * MX - 6.15, `RadHAR: Δ accuracy (points); full-model std ±${f2(AB.full.rh[1])}`, HEX.accent4);
+ablChart('mp', mpAbl, MX, 5.9, `MiliPoint, unseen people: Δ accuracy (points, ${nAb('mp')} seed${nAb('mp') > 1 ? 's' : ''})`, HEX.accent2);
+ablChart('rh', rhAbl, MX + 6.15, W - 2 * MX - 6.15, `RadHAR: Δ accuracy (points, ${nAb('rh')} seeds); full-model std ±${f2(AB.full.rh[1])}`, HEX.accent4);
 
 // =================================================================== 21 Protocol
 s = content('How the split changes the answer (MiliPoint)', N('C',
@@ -363,16 +367,16 @@ s.addChart(pres.charts.BAR, prM.map(([k, n]) => ({ name: n, labels: ['Subject-di
 card(s, MX + 8.45, TOP + 0.2, W - 2 * MX - 8.45, 4.9, 'Takeaway', `Random window splits leak ${f2(100 * (rnd.fraction_test_frames_seen_in_training || 0))} % of test frames into training. Report subject-disjoint accuracy for claims about new users.`, C.accent2, { bs: 22 });
 
 // =================================================================== 22 Transfer
-s = content('Cross-dataset transfer: MiliPoint to RadHAR', N('C',
-  'We pre-train STPT-Lite on MiliPoint (xyz, harmonised axes) and fine-tune on RadHAR with 10%, 25% and 100% of the training recordings, comparing with training from scratch on the same subsets (xyz input for both, three seeds). This tests whether representations learned on one radar transfer to another radar and label set.',
-  [['Why only xyz?', 'MiliPoint has no Doppler or intensity; using xyz on both sides keeps the comparison clean.']]));
 const TR = D.transfer; const fr = ['0.1', '0.25', '1'];
 const trv = (k, w) => (TR[k] || TR[k + '.0'] || { scratch: [null], init: [null] })[w][0] || 0;
+s = content(`MiliPoint pre-training: +${(trv('0.1', 'init') - trv('0.1', 'scratch')).toFixed(0)} points with 10 % of RadHAR data`, N('C',
+  `We pre-train STPT-Lite on MiliPoint (xyz, harmonised axes) and fine-tune on RadHAR with 10%, 25% and 100% of the training recordings, comparing with training from scratch on the same subsets (xyz input for both, two seeds). Result: with 10% of the RadHAR recordings, pre-training raises accuracy from ${f2(trv('0.1', 'scratch'))}% to ${f2(trv('0.1', 'init'))}%; at 25% the gain is about one point and inside the seed spread; with all data both are equivalent. Different radar, frame rate, people, room and labels, so the tokenizer appears to learn largely sensor-independent motion features, which matters when a new home has few labelled recordings.`,
+  [['Why only xyz?', 'MiliPoint has no Doppler or intensity; using xyz on both sides keeps the comparison clean.']]));
 s.addChart(pres.charts.LINE, [{ name: 'from scratch', labels: ['10 %', '25 %', '100 %'], values: fr.map((f) => trv(f, 'scratch')) },
   { name: 'pre-trained on MiliPoint', labels: ['10 %', '25 %', '100 %'], values: fr.map((f) => trv(f, 'init')) }],
   chartBase({ x: MX, y: TOP, w: 8.2, h: 5.4, showValue: true, dataLabelPosition: 't', dataLabelFormatCode: '0.0', chartColors: [HEX.accent4, HEX.accent2], lineSize: 3, lineDataSymbolSize: 9,
     showLegend: true, legendPos: 'b', showTitle: true, title: 'RadHAR test accuracy (%) vs. fraction of training recordings', valAxisMinVal: 50, valAxisMaxVal: 100 }));
-card(s, MX + 8.45, TOP + 0.2, W - 2 * MX - 8.45, 4.9, 'Reading the plot', 'Gap between the lines = value of pre-training. It is largest when little target data is available, if transfer helps.', C.accent1, { bs: 22 });
+card(s, MX + 8.45, TOP + 0.2, W - 2 * MX - 8.45, 4.9, 'Finding', `10 %: ${f2(trv('0.1', 'scratch'))} → ${f2(trv('0.1', 'init'))} %\n25 %: ${f2(trv('0.25', 'scratch'))} → ${f2(trv('0.25', 'init'))} %\n100 %: no gain\n\nPre-training pays off when labelled target data are scarce.`, C.accent1, { bs: 22 });
 
 // =================================================================== 23 Explainability
 s = content('The model integrates evidence over the whole window', N('M',
@@ -396,8 +400,8 @@ bullets(s, ['Upload raw radar file  →  pre-processing view  →  live predicti
 s = content('Limitations and future work', N('M',
   'Be explicit with examiners. RadHAR cannot test new people or rooms. MiliPoint is xyz-only and has three test subjects. Robustness uses synthetic perturbations, not a radar simulator. Latency is measured on a desktop CPU thread. No fall labels, single person only. Future work follows directly from these limitations.',
   [['What would you do with more time?', 'Leave-one-subject-out and cross-room evaluation, on-device deployment, and self-supervised pre-training on the many unlabelled frames.']]));
-card(s, MX, TOP + 0.1, 5.95, 5.0, 'Limitations', '• RadHAR: same people and sessions in test\n• MiliPoint: xyz only; 3 test subjects\n• Synthetic noise, not physical simulation\n• Desktop-CPU latency; no MCU deployment\n• No fall labels; single person', C.accent2, { bs: 22 });
-card(s, MX + 6.1, TOP + 0.1, 5.95, 5.0, 'Future work', '• Leave-one-subject-out, cross-room data\n• Deploy on the radar companion processor\n• Physics-based radar noise simulation\n• Self-supervised pre-training, streaming recognition', C.accent1, { bs: 22 });
+card(s, MX, TOP + 0.1, 5.95, 5.0, 'Limitations', '• RadHAR: same people and sessions in test\n• MiliPoint: xyz only; 3 test subjects\n• Sensitive to injected false detections\n• Synthetic noise, not physical simulation\n• Desktop-CPU latency; no MCU deployment\n• No fall labels; single person', C.accent2, { bs: 22 });
+card(s, MX + 6.1, TOP + 0.1, 5.95, 5.0, 'Future work', '• Median-based motion descriptor, outlier-aware attention\n• Leave-one-subject-out, cross-room data\n• Deploy on the radar companion processor\n• Physics-based radar noise simulation\n• Self-supervised pre-training, streaming recognition', C.accent1, { bs: 22 });
 
 // =================================================================== 26 Conclusion
 s = pres.addSlide({ masterName: 'SECTION_DARK', sectionTitle: sec });
@@ -405,6 +409,8 @@ s.addText('Conclusion', { placeholder: 'title' });
 s.addText([
   { text: `STPT-Lite+KD+robust: ${f2(ours.acc)} % on RadHAR and ${f2(oursMP.acc)} % on 49 MiliPoint actions of unseen people`, options: { bullet: true, breakLine: true } },
   { text: `${(ours.params / 1000).toFixed(1)} K parameters, ${f2(ours.mflops)} MFLOPs, ${f2(ours.lat)} ms, ${f2(ours.int8mb)} MB INT8`, options: { bullet: true, breakLine: true } },
+  { text: 'Temporal Transformer (−11.9) and point attention (−6.5) carry the accuracy on unseen people', options: { bullet: true, breakLine: true } },
+  { text: `MiliPoint pre-training: ${f2(trv('0.1', 'scratch'))} → ${f2(trv('0.1', 'init'))} % with 10 % of RadHAR data`, options: { bullet: true, breakLine: true } },
   { text: 'Doppler-based clutter removal; automated leakage audit; quantified protocol inflation', options: { bullet: true, breakLine: true } },
   { text: 'Saved model, working demo, paper, technical report and full logs', options: { bullet: true } },
 ], { placeholder: 'body' });

@@ -11,7 +11,7 @@ teacher, trained with noise-robust augmentation and stored with INT8 weights.
 | | RadHAR (5 activities) | MiliPoint (49 actions, **unseen people**) |
 |---|---|---|
 | STPT-Lite + KD + robust (ours) | **96.83 %** | **49.56 %** top-1, 78.03 % top-3 |
-| Best re-implemented baseline | PointNet + noise-robust training | PointNet |
+| Best re-implemented baseline | PointNet + noise-robust training: 97.38 % | PointNet: 32.57 % |
 | Model size | 117.5 K params, 36.6 MFLOPs, 2.58 ms (1 CPU thread), 0.14 MB INT8 | |
 
 Deliverables in this repository: source code, trained models (`checkpoints/`), Streamlit demo (`demo/`), IEEE paper
@@ -102,21 +102,53 @@ MiliPoint pickles are loaded with a restricted unpickler (`src/safe_pickle.py`) 
 | Split | Accuracy (%) |
 |---|---|
 | Subject-disjoint (ours) | 45.79 ± 6.30 (n=3) |
-| Chronological (MiliPoint code) | n/a |
-| Random overlapping windows (leaky) | n/a |
+| Chronological (MiliPoint code) | 58.38 (n=1) |
+| Random overlapping windows (leaky) | 79.48 (n=1) |
 
-Robustness, ablation and transfer results: `results/summary_*.csv`, `results/robustness_*.csv` and the paper.
+### Ablation (STPT-Lite without KD; change in test accuracy vs. the full model trained with the same seeds, points)
+| Removed component | MiliPoint (unseen people) | RadHAR |
+|---|---|---|
+| − temporal Transformer | -11.9 (n=2) | +0.7 (n=2) |
+| − intra-segment attention | -6.5 (n=2) | +0.9 (n=2) |
+| − motion descriptor | +0.5 (n=2) | +1.7 (n=2) |
+| − Doppler & intensity | – | +0.4 (n=2) |
+| − clutter gating | – | +1.6 (n=2) |
+| − all augmentation | – | +0.7 (n=2) |
+
+RadHAR is saturated (all models 95–98 %), so its ablation differences lie inside the seed spread; MiliPoint is the informative benchmark.
+
+### Cross-dataset transfer (MiliPoint pre-training → RadHAR, xyz input)
+| RadHAR training data | From scratch | Pre-trained on MiliPoint |
+|---|---|---|
+| 10 % | 61.22 ± 0.58 (n=2) | 78.98 ± 4.34 (n=2) |
+| 25 % | 86.10 ± 1.37 (n=2) | 87.45 ± 2.32 (n=2) |
+| 100 % | 96.42 ± 1.69 (n=2) | 95.23 ± 2.02 (n=2) |
+
+### Robustness (test accuracy %, identical perturbed windows for every model; full grid in `results/robustness_summary.csv`)
+| Condition | MiliPoint: ours | PointNet | PointNet + robust | RadHAR: ours | PointNet | PointNet + robust |
+|---|---|---|---|---|---|---|
+| clean | 49.6 | 32.6 | 18.7 | 96.8 | 96.3 | 97.4 |
+| jitter 10 cm | 22.8 | 14.3 | 10.6 | 95.0 | 93.3 | 94.2 |
+| sparsity 12.5 % | 13.9 | 14.7 | 10.3 | 80.0 | 87.6 | 91.1 |
+| outliers 20 % | 39.8 | 15.5 | 14.6 | 55.1 | 51.5 | 96.0 |
+| frame loss 50 % | 39.0 | 24.7 | 15.8 | 95.6 | 93.7 | 95.2 |
+| combined, severity 3 | 15.8 | 9.6 | 9.3 | 57.0 | 51.5 | 92.2 |
+
+Known weakness: on RadHAR, injected false detections hurt STPT-Lite much more than PointNet with the same robust training.
 
 ## Reproduce everything
 
 ```bash
-python scripts/runner.py scripts/jobs_main.txt 2      # all training runs (CPU; resumable)
+python scripts/runner.py scripts/jobs_main.txt 2      # all training runs (CPU; resumable; skips finished runs)
+python scripts/runner.py scripts/jobs_final.txt 2     # transfer + MiliPoint ablation
 python scripts/analyze.py                              # tables, statistics, figures
 python scripts/xai_robust.py robust radhar && python scripts/xai_robust.py robust milipoint
 python scripts/xai_robust.py robustfig && python scripts/xai_robust.py xai
 python scripts/leakage_audit.py && python scripts/make_numbers.py
 python scripts/export_model.py rh_stpt_lite_kd_robust checkpoints/stpt_lite_radhar radhar
 cd paper && latexmk -pdf main.tex
+# or regenerate every table, figure, document and the deck in one go:
+bash scripts/final_build.sh
 ```
 Hyper-parameters: `configs/default.yaml`. Every run directory stores its arguments, configuration, history
 (train/val loss and accuracy, learning rate), test predictions and checkpoint.

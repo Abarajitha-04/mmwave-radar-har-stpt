@@ -1,1 +1,11 @@
-PENDINGTEXT transfer_text
+Pre-training on MiliPoint helps most when little RadHAR data is available. With
+10\% of the RadHAR training recordings it raises test accuracy from
+\trrhxyzscratchfTen\% to \trrhxyzmpinitfTen\% (two seeds; +18 points, larger
+than the seed spread). With 25\% the gain shrinks to about one point, inside the
+seed spread, and with all training data the pre-trained and scratch models are
+equivalent (\trrhxyzmpinitfFull\% vs.\ \trrhablxyz\%). Since the two datasets
+differ in radar, frame rate, subjects, room and label set, this suggests that
+the segment tokenizer learns largely sensor-independent motion features from MiliPoint's
+49 actions, which are most valuable when target labels are scarce, as in a new
+home with few annotated recordings. With all data, one pre-trained seed reached its best validation score after the
+first epoch and was stopped early (93.8\%); we report it unchanged.

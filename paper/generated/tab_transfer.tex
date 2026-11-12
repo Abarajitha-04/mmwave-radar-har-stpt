@@ -1,6 +1,6 @@
 \begin{table}[t]
 \centering
-\caption{Cross-dataset transfer (STPT-Lite, $xyz$ input): test accuracy (\%) when fine-tuning on a fraction of target training recordings/runs, from scratch vs.\ initialised from the model trained on the other dataset (mean\,$\pm$\,std, 3 seeds).}
+\caption{Cross-dataset transfer (STPT-Lite, $xyz$ input): test accuracy (\%) when fine-tuning on a fraction of target training recordings/runs, from scratch vs.\ initialised from the MiliPoint model (mean\,$\pm$\,std over 2 seeds; n=1 marks a single run). Scratch at 100\% is the $xyz$-only ablation run.}
 \label{tab:transfer}
 \setlength{\tabcolsep}{3pt}
 \resizebox{\columnwidth}{!}{%
@@ -8,12 +8,9 @@
 \toprule
 Direction & Target data & Scratch & Pre-trained \\
 \midrule
-MiliPoint $\rightarrow$ RadHAR & 10\% & -- & -- \\
-MiliPoint $\rightarrow$ RadHAR & 25\% & -- & -- \\
-MiliPoint $\rightarrow$ RadHAR & 100\% & 95.23\,$\pm$\,0.00 & -- \\
-\midrule
-RadHAR $\rightarrow$ MiliPoint & 25\% & -- & -- \\
-RadHAR $\rightarrow$ MiliPoint & 100\% & 45.79\,$\pm$\,6.30 & -- \\
+MiliPoint $\rightarrow$ RadHAR & 10\% & 61.22\,$\pm$\,0.58 & 78.98\,$\pm$\,4.34 \\
+MiliPoint $\rightarrow$ RadHAR & 25\% & 86.10\,$\pm$\,1.37 & 87.45\,$\pm$\,2.32 \\
+MiliPoint $\rightarrow$ RadHAR & 100\% & 96.42\,$\pm$\,1.69 & 95.23\,$\pm$\,2.02 \\
 \bottomrule
 \end{tabular}}
 \end{table}

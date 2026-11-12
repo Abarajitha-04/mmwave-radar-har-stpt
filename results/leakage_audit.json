@@ -203,8 +203,8 @@
   }
  },
  "model_selection": {
-  "runs_checked": 0,
-  "consistent": 0,
+  "runs_checked": 91,
+  "consistent": 91,
   "note": "checkpoint = epoch with highest validation macro-F1; test set evaluated once after training"
  }
 }

@@ -26,4 +26,4 @@ Random protocol: 91.2 % of test windows share frames with a training window; mea
 
 ## Model selection
 
-0 / 0 completed runs: saved checkpoint epoch == epoch of maximal validation macro-F1. The test split is evaluated once, after training, with that checkpoint.
+91 / 91 completed runs: saved checkpoint epoch == epoch of maximal validation macro-F1. The test split is evaluated once, after training, with that checkpoint.

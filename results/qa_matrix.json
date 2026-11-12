@@ -27,7 +27,7 @@
   "area": "C2 Leakage",
   "check": "Automated audit: splits disjoint, train-only statistics",
   "evidence": "docs/leakage\\_audit.md",
-  "status": "FAIL"
+  "status": "PASS"
  },
  {
   "area": "C3 Model",
@@ -57,7 +57,7 @@
   "area": "C4 Cross-dataset",
   "check": "MiliPoint$\\rightarrow$RadHAR transfer",
   "evidence": "results/summary\\_transfer.csv",
-  "status": "FAIL"
+  "status": "PASS"
  },
  {
   "area": "C4 Ablation",
@@ -69,7 +69,7 @@
   "area": "Robustness",
   "check": "7 perturbation types, 3 severities, both datasets",
   "evidence": "results/robustness\\_*.csv",
-  "status": "FAIL"
+  "status": "PASS"
  },
  {
   "area": "Training",
@@ -128,8 +128,8 @@
  {
   "area": "No placeholders",
   "check": "No pending text in paper or report sources",
-  "evidence": "grep PENDINGTEXT",
-  "status": "FAIL"
+  "evidence": "placeholder grep",
+  "status": "PASS"
  },
  {
   "area": "C6 Paper",
@@ -141,7 +141,7 @@
   "area": "Report",
   "check": "Compiled / built and inspected page by page",
   "evidence": "report/report.pdf",
-  "status": "FAIL"
+  "status": "PASS"
  },
  {
   "area": "C7 Slides",

@@ -34,12 +34,12 @@ EOF
 mk 04_research_paper
 cp paper/main.pdf "$F/04_research_paper/Team10_STPT-Lite_IEEE_paper.pdf"
 mkdir -p "$F/04_research_paper/latex_source"
-cp -r paper/main.tex paper/refs.bib paper/sections paper/generated paper/IEEEtran.cls "$F/04_research_paper/latex_source/" 2>/dev/null || true
+cp -r paper/main.tex paper/refs.bib paper/sections paper/generated paper/IEEEtran.cls paper/IEEEtran.bst "$F/04_research_paper/latex_source/" 2>/dev/null || true
 
 mk 05_technical_development_report
 cp report/report.pdf "$F/05_technical_development_report/Team10_Technical_Development_and_Decision_Report.pdf"
 mkdir -p "$F/05_technical_development_report/latex_source"
-cp -r report/report.tex report/chapters "$F/05_technical_development_report/latex_source/"
+cp -r report/report.tex report/chapters report/IEEEtran.bst "$F/05_technical_development_report/latex_source/"
 
 mk 06_presentation
 cp presentation/Team10_mmWave_HAR.pptx "$F/06_presentation/"

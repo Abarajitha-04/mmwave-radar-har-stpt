@@ -13,9 +13,16 @@
   point clouds; it does not simulate the physical radar (multipath geometry,
   interference, different mounting heights or rooms).
 \item \textbf{Compute}: all experiments ran on a 2-core CPU. Training was capped
-  at 15 epochs with early stopping and a 20/24-frame training stride. DGCNN and
-  Point Transformer on MiliPoint were run with one seed because of their cost.
-  The voxel baseline uses fewer filters than the original RadHAR network.
+  at 15 (RadHAR) and 30 (MiliPoint) epochs with early stopping and a 20/24-frame
+  training stride. DGCNN and Point Transformer were evaluated on RadHAR only
+  (DGCNN with one seed, the voxel baseline with two), because of their cost on
+  the larger MiliPoint training set. The voxel baseline uses fewer filters than
+  the original RadHAR network. Ablation and transfer variants use one to three
+  seeds, as stated in each table.
+\item \textbf{Sensitivity to false detections and extreme sparsity}: on RadHAR,
+  20\% injected outliers reduce the proposed model to 55\% (PointNet with the same
+  robust training: 96\%), and with 12.5\% of the returns kept on MiliPoint it
+  falls to PointNet level (Chapter~\ref{ch:results}).
 \item \textbf{Edge claims}: latency was measured on a desktop-class CPU thread and
   storage is computed for INT8 weights; deployment on a micro-controller was not
   carried out.

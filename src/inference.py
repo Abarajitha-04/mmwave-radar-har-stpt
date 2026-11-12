@@ -69,7 +69,7 @@ class Bundle:
 def main():
     import argparse
     ap = argparse.ArgumentParser(description='Classify a raw RadHAR point-cloud recording (.txt)')
-    ap.add_argument('--bundle', default='checkpoints/stpt_lite_kd_radhar')
+    ap.add_argument('--bundle', default='checkpoints/stpt_lite_radhar')
     ap.add_argument('--input', required=True)
     ap.add_argument('--stride', type=int, default=None)
     a = ap.parse_args()

@@ -1,0 +1,17 @@
+mp_abl_noattn_s0 | --data mp_subject --model stpt_lite --seed 0 --epochs 30 --no_attn
+mp_abl_nomotion_s0 | --data mp_subject --model stpt_lite --seed 0 --epochs 30 --no_motion
+rh_xyz_scratch_f0.1_s0 | --data radhar --model stpt_lite --seed 0 --feats xyz --label_frac 0.1
+rh_xyz_scratch_f0.25_s0 | --data radhar --model stpt_lite --seed 0 --feats xyz --label_frac 0.25
+rh_xyz_mpinit_f0.1_s0 | --data radhar --model stpt_lite --seed 0 --feats xyz --label_frac 0.1 --init results/runs/mp_stpt_lite_s0 | mp_stpt_lite_s0
+rh_xyz_mpinit_f0.25_s0 | --data radhar --model stpt_lite --seed 0 --feats xyz --label_frac 0.25 --init results/runs/mp_stpt_lite_s0 | mp_stpt_lite_s0
+rh_xyz_mpinit_f1.0_s0 | --data radhar --model stpt_lite --seed 0 --feats xyz --label_frac 1.0 --init results/runs/mp_stpt_lite_s0 | mp_stpt_lite_s0
+mp_abl_notemporal_s0 | --data mp_subject --model stpt_lite --seed 0 --epochs 30 --no_temporal
+mpo_random_pointnet_s0 | --data mp_random --model pointnet --seed 0 --epochs 30 
+rh_xyz_scratch_f0.1_s1 | --data radhar --model stpt_lite --seed 1 --feats xyz --label_frac 0.1
+rh_xyz_scratch_f0.25_s1 | --data radhar --model stpt_lite --seed 1 --feats xyz --label_frac 0.25
+rh_xyz_mpinit_f0.1_s1 | --data radhar --model stpt_lite --seed 1 --feats xyz --label_frac 0.1 --init results/runs/mp_stpt_lite_s1 | mp_stpt_lite_s1
+rh_xyz_mpinit_f0.25_s1 | --data radhar --model stpt_lite --seed 1 --feats xyz --label_frac 0.25 --init results/runs/mp_stpt_lite_s1 | mp_stpt_lite_s1
+rh_xyz_mpinit_f1.0_s1 | --data radhar --model stpt_lite --seed 1 --feats xyz --label_frac 1.0 --init results/runs/mp_stpt_lite_s1 | mp_stpt_lite_s1
+mp_abl_noattn_s1 | --data mp_subject --model stpt_lite --seed 1 --epochs 30 --no_attn
+mp_abl_nomotion_s1 | --data mp_subject --model stpt_lite --seed 1 --epochs 30 --no_motion
+mp_abl_notemporal_s1 | --data mp_subject --model stpt_lite --seed 1 --epochs 30 --no_temporal

@@ -21,7 +21,26 @@ def table(pfx, top3=False):
 
 
 G = {r.group: r for _, r in agg(df, sorted(set(df.group))).iterrows()}
-g = lambda k: f'{G[k].acc_mean:.2f} ± {G[k].acc_std:.2f} (n={G[k].n})' if k in G else 'n/a'
+g = lambda k: (f'{G[k].acc_mean:.2f} ± {G[k].acc_std:.2f} (n={G[k].n})' if G[k].n > 1 else f'{G[k].acc_mean:.2f} (n=1)') if k in G else 'n/a'
+def best(p):
+    k = max((k for k in G if k.startswith(p) and k[3:] in NAMES and not k[3:].startswith('stpt')), key=lambda k: G[k].acc_mean)
+    return f'{NAMES[k[3:]]}: {G[k].acc_mean:.2f} %'
+import pandas as _pd
+def paired(v, ref):
+    a = df[df.group == v]
+    if not len(a): return None
+    f = df[(df.group == ref) & df.seed.isin(set(a.seed))]
+    return a.acc.mean() - f.acc.mean(), len(a)
+abl_rows = []
+for k, n in [('notemporal', 'temporal Transformer'), ('noattn', 'intra-segment attention'), ('nomotion', 'motion descriptor'), ('xyz', 'Doppler & intensity'), ('nogate', 'clutter gating'), ('augnone', 'all augmentation')]:
+    m, r = paired(f'mp_abl_{k}', 'mp_stpt_lite'), paired(f'rh_abl_{k}', 'rh_stpt_lite')
+    abl_rows.append(f'| − {n} | ' + (f'{m[0]:+.1f} (n={m[1]})' if m else '–') + ' | ' + (f'{r[0]:+.1f} (n={r[1]})' if r else '–') + ' |')
+rob = _pd.read_csv('results/robustness_summary.csv')
+def rv(ds, mdl, c, l):
+    x = rob[(rob.dataset == ds) & (rob.model == mdl) & (rob.condition == c) & (abs(rob.level - l) < 0.006)]
+    return f'{x.acc.iloc[0]:.1f}' if len(x) else '–'
+rob_rows = [f'| {lab} | ' + ' | '.join(rv(ds, m, c, l) for ds in ['milipoint', 'radhar'] for m in ['stpt_lite_kd_robust', 'pointnet', 'pointnet_robust']) + ' |' for lab, c, l in [('clean', 'clean', 0), ('jitter 10 cm', 'jitter', 0.1), ('sparsity 12.5 %', 'sparsity', 0.125), ('outliers 20 %', 'outliers', 0.2), ('frame loss 50 %', 'frameloss', 0.5), ('combined, severity 3', 'combined', 3)]]
+
 ours = G.get('rh_stpt_lite_kd_robust'); oursm = G.get('mp_stpt_lite_kd_robust')
 audit = json.load(open('results/leakage_audit.json')) if os.path.exists('results/leakage_audit.json') else {}
 rnd = audit.get('milipoint', {}).get('random', {})
@@ -39,7 +58,7 @@ teacher, trained with noise-robust augmentation and stored with INT8 weights.
 | | RadHAR (5 activities) | MiliPoint (49 actions, **unseen people**) |
 |---|---|---|
 | STPT-Lite + KD + robust (ours) | **{ours.acc_mean:.2f} %** | **{oursm.acc_mean:.2f} %** top-1, {oursm.top3:.2f} % top-3 |
-| Best re-implemented baseline | {max((G[k].acc_mean, NAMES[k[3:]]) for k in G if k.startswith('rh_') and k[3:] in NAMES and not k[3:].startswith('stpt'))[1]} | {max((G[k].acc_mean, NAMES[k[3:]]) for k in G if k.startswith('mp_') and k[3:] in NAMES and not k[3:].startswith('stpt'))[1]} |
+| Best re-implemented baseline | {best('rh_')} | {best('mp_')} |
 | Model size | {ours.params / 1e3:.1f} K params, {ours.mflops:.1f} MFLOPs, {ours.lat_ms:.2f} ms (1 CPU thread), {ours.int8_mb:.2f} MB INT8 | |
 
 Deliverables in this repository: source code, trained models (`checkpoints/`), Streamlit demo (`demo/`), IEEE paper
@@ -111,18 +130,40 @@ MiliPoint pickles are loaded with a restricted unpickler (`src/safe_pickle.py`) 
 | Chronological (MiliPoint code) | {g('mpo_official_stpt_lite')} |
 | Random overlapping windows (leaky) | {g('mpo_random_stpt_lite')} |
 
-Robustness, ablation and transfer results: `results/summary_*.csv`, `results/robustness_*.csv` and the paper.
+### Ablation (STPT-Lite without KD; change in test accuracy vs. the full model trained with the same seeds, points)
+| Removed component | MiliPoint (unseen people) | RadHAR |
+|---|---|---|
+{chr(10).join(abl_rows)}
+
+RadHAR is saturated (all models 95–98 %), so its ablation differences lie inside the seed spread; MiliPoint is the informative benchmark.
+
+### Cross-dataset transfer (MiliPoint pre-training → RadHAR, xyz input)
+| RadHAR training data | From scratch | Pre-trained on MiliPoint |
+|---|---|---|
+| 10 % | {g('rh_xyz_scratch_f0.1')} | {g('rh_xyz_mpinit_f0.1')} |
+| 25 % | {g('rh_xyz_scratch_f0.25')} | {g('rh_xyz_mpinit_f0.25')} |
+| 100 % | {g('rh_abl_xyz')} | {g('rh_xyz_mpinit_f1.0')} |
+
+### Robustness (test accuracy %, identical perturbed windows for every model; full grid in `results/robustness_summary.csv`)
+| Condition | MiliPoint: ours | PointNet | PointNet + robust | RadHAR: ours | PointNet | PointNet + robust |
+|---|---|---|---|---|---|---|
+{chr(10).join(rob_rows)}
+
+Known weakness: on RadHAR, injected false detections hurt STPT-Lite much more than PointNet with the same robust training.
 
 ## Reproduce everything
 
 ```bash
-python scripts/runner.py scripts/jobs_main.txt 2      # all training runs (CPU; resumable)
+python scripts/runner.py scripts/jobs_main.txt 2      # all training runs (CPU; resumable; skips finished runs)
+python scripts/runner.py scripts/jobs_final.txt 2     # transfer + MiliPoint ablation
 python scripts/analyze.py                              # tables, statistics, figures
 python scripts/xai_robust.py robust radhar && python scripts/xai_robust.py robust milipoint
 python scripts/xai_robust.py robustfig && python scripts/xai_robust.py xai
 python scripts/leakage_audit.py && python scripts/make_numbers.py
 python scripts/export_model.py rh_stpt_lite_kd_robust checkpoints/stpt_lite_radhar radhar
 cd paper && latexmk -pdf main.tex
+# or regenerate every table, figure, document and the deck in one go:
+bash scripts/final_build.sh
 ```
 Hyper-parameters: `configs/default.yaml`. Every run directory stores its arguments, configuration, history
 (train/val loss and accuracy, learning rate), test predictions and checkpoint.

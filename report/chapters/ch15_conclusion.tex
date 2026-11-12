@@ -22,7 +22,10 @@ people, the proposed STPT-Lite+KD+robust reaches \mistptlitekdrobustAcc\% top-1
 baseline, with \oursParamsK\,K parameters, \oursMflops\,MFLOPs, \oursLat\,ms CPU
 latency and \oursIntMB\,MB of INT8 weights. Noise-robust training improves
 accuracy under every perturbation type on MiliPoint without lowering clean
-accuracy. On RadHAR all models saturate at about 96--98\%.
+accuracy. On RadHAR all models saturate at about 95--98\%. Pre-training on
+MiliPoint raises RadHAR accuracy with 10\% of the training recordings from
+\trrhxyzscratchfTen\% to \trrhxyzmpinitfTen\%. On unseen people, removing the
+intra-segment attention or the temporal Transformer costs several points.
 
 \textbf{What was verified.} Split disjointness, absence of duplicated
 recordings and frames, train-only statistics and validation-only checkpoint
@@ -32,5 +35,6 @@ real-browser screenshots).
 
 \textbf{What remains unresolved.} RadHAR cannot test new users or rooms. Our
 PointNet++ re-implementation under-performs on MiliPoint. Under extreme
-sparsity STPT-Lite degrades more than PointNet. No on-device deployment or
+sparsity STPT-Lite falls to PointNet level, and on RadHAR it is much more
+sensitive to injected false detections than PointNet with robust training. No on-device deployment or
 clinical evaluation was performed (Chapter~14).

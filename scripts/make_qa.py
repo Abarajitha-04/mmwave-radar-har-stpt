@@ -43,7 +43,7 @@ nseed = lambda g: int((df.group == g).sum())
 grp = set(df.group)
 rob = {d: os.path.exists(f'results/robustness_{d}.csv') for d in ['radhar', 'milipoint']}
 rcsv = pd.read_csv('results/robustness_milipoint.csv') if rob['milipoint'] else None
-pend = subprocess.run(['grep', '-rl', 'PENDINGTEXT', 'paper/generated', 'paper/sections', 'report/chapters'], capture_output=True, text=True).stdout.split()
+pend = subprocess.run(['grep', '-rl', '--exclude=qa_rows.tex', 'PENDINGTEXT', 'paper/generated', 'paper/sections', 'report/chapters'], capture_output=True, text=True).stdout.split()
 hist_ok = all(set(['train_loss', 'val_loss', 'train_acc', 'val_acc', 'lr']) <= set(pd.read_csv(h).columns) for h in glob.glob('results/runs/*/history.csv'))
 bundle = 'checkpoints/stpt_lite_radhar'
 nbib = len(re.findall(r'^@', open('paper/refs.bib').read(), re.M))
@@ -72,11 +72,11 @@ Q = [
     ('C7 Demo video', 'Screen recording of the live demo', 'figures/demo/demo.mp4', st(ex('figures/demo/demo.mp4'))),
     ('Config', 'Hyper-parameters in a config file', 'configs/default.yaml', st(ex('configs/default.yaml'))),
     ('Documentation', 'README, DEVLOG, reproduction script', 'README.md, docs/', st(ex('README.md', 'docs/DEVLOG.md', 'scripts/run_all.sh'))),
-    ('No placeholders', 'No pending text in paper or report sources', 'grep PENDINGTEXT', st(not pend)),
+    ('No placeholders', 'No pending text in paper or report sources', 'placeholder grep', st(not pend)),
 ]
 for name, path in [('C6 Paper', 'paper/main.pdf'), ('Report', 'report/report.pdf'), ('C7 Slides', 'presentation/Team10_mmWave_HAR.pptx')]:
     Q.append((name, 'Compiled / built and inspected page by page', tex(path), st(ex(path))))
-open(f'{OUT}/qa_rows.tex', 'w').write('\n'.join(f'{a} & {b} & \\texttt{{\\footnotesize {c}}} & \\textbf{{{d}}} \\\\' for a, b, c, d in Q))
+open(f'{OUT}/qa_rows.tex', 'w').write('\n'.join(f'{a} & {b} & {{\\footnotesize\\ttfamily {c.replace("/", "/\\allowbreak{}").replace("_", "_\\allowbreak{}")}}} & \\textbf{{{d}}} \\\\' for a, b, c, d in Q))
 json.dump([dict(area=a, check=b, evidence=c, status=d) for a, b, c, d in Q], open('results/qa_matrix.json', 'w'), indent=1)
 open('results/qa_matrix.md', 'w').write('| Area | Check | Evidence | Status |\n|---|---|---|---|\n' +
                                         '\n'.join(f'| {a} | {re.sub(r"[$\\\\]|ensuremath", "", b).replace("geq", "≥").replace("rightarrow", "→")} | {c.replace(chr(92), "")} | {d} |' for a, b, c, d in Q))

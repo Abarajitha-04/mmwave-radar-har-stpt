@@ -12,3 +12,7 @@ rh_pointnet_robust_s1 clean 97.25 combined3 91.98
 rh_pointnet_robust_s2 clean 97.45 combined3 93.27
 rh_pointnet_lstm_s0 clean 95.88 combined3 45.33
 rh_pointnet2_s0 clean 97.53 combined3 53.55
+rh_dgcnn_s0 clean 95.85 combined3 66.73
+rh_pointtransformer_s0 clean 96.75 combined3 63.87
+rh_voxel_tdcnn_s0 clean 94.89 combined3 68.78
+rh_stpt_tiny_kd_s0 clean 97.03 combined3 49.14

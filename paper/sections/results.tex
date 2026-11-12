@@ -31,7 +31,7 @@ their own implementation under a different, subject-overlapping split
 and, more importantly, the worst case. Without it one seed collapsed to 38.6\%,
 whereas the distilled students stay above 44\% in every seed.
 
-\textbf{RadHAR (Table~\ref{tab:radhar}).} Every model reaches about 96--98\%,
+\textbf{RadHAR (Table~\ref{tab:radhar}).} Every model reaches about 95--98\%,
 and the differences between models are mostly within one seed standard
 deviation. The proposed model obtains \rastptlitekdrobustAcc\,$\pm$\,\rastptlitekdrobustStd\%
 (95\% CI of seed 0: [\raCiLo, \raCiHi]). Plain PointNet is statistically
@@ -102,6 +102,7 @@ recordings. \input{generated/transfer_text.tex}
 \input{generated/robust_text.tex}
 
 \subsection{Explainability and error analysis}
+\label{sec:xai}
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{../figures/confusion.pdf}

@@ -50,7 +50,7 @@ def main_table(pfx, name, K):
 
 
 for pfx, name, K, cap, lab in [('rh_', 'radhar', 5, 'RadHAR official test recordings (3{,}565 windows, 5 classes). Mean\\,$\\pm$\\,std over 3 seeds. Sig.: number of seeds in which the Holm-corrected McNemar test against the proposed model gives $p<0.05$; $\\uparrow$ ours better / $\\downarrow$ ours worse. Latency: median, batch 1, one CPU thread.', 'tab:radhar'),
-                               ('mp_', 'milipoint', 49, 'MiliPoint, subject-disjoint test (subjects 8--10, 3{,}569 windows, 49 actions). Same conventions as Table~\\ref{tab:radhar}.', 'tab:milipoint')]:
+                               ('mp_', 'milipoint', 49, 'MiliPoint, subject-disjoint test (subjects 8--10, 3{,}472 windows, 49 actions). Same conventions as Table~\\ref{tab:radhar}.', 'tab:milipoint')]:
     t, rows = main_table(pfx, name, K)
     top3h = ' & Top-3' if K > 5 else ''
     cols = 'lrrrcc' + ('r' if K > 5 else '') + 'c'
@@ -79,13 +79,16 @@ for k, d in desc:
     rg, mg = ('rh_stpt_lite', 'mp_stpt_lite') if k == '' else (f'rh_abl_{k}', f'mp_abl_{k}')
     def cell(g, ref):
         if g not in A: return '--'
-        r = A[g]; s = pm(r.acc_mean, r.acc_std)
+        r = A[g]; s = pm(r.acc_mean, r.acc_std) if r.n > 1 else f'{r.acc_mean:.2f}$^{{\\dagger}}$'
         if g != ref and ref in A:
-            dlt = r.acc_mean - A[ref].acc_mean; s += f' ({dlt:+.2f})'
+            # paired comparison: full model averaged over the same seeds as the variant
+            sv = set(df[df.group == g].seed); fr = df[(df.group == ref) & (df.seed.isin(sv))]
+            dlt = r.acc_mean - (fr.acc.mean() if len(fr) else A[ref].acc_mean); s += f' ({dlt:+.2f})'
         return s
+    if k and rg not in A and mg not in A: continue
     rows.append(f'{d} & {cell(rg, "rh_stpt_lite")} & {cell(mg, "mp_stpt_lite")} \\\\')
     if k == '': rows.append('\\midrule')
-tex = ['\\begin{table}[t]', '\\centering', f'\\caption{{Ablation of STPT-Lite (no distillation): test accuracy (\\%), mean\\,$\\pm$\\,std over seeds (variants: {_nab("rh_abl_")} on RadHAR, {_nab("mp_abl_")} on MiliPoint; full model: 3), change w.r.t.\\ the full model in brackets.}}',
+tex = ['\\begin{table}[t]', '\\centering', f'\\caption{{Ablation of STPT-Lite (no distillation): test accuracy (\\%), mean\\,$\\pm$\\,std over seeds (variants: {_nab("rh_abl_")} on RadHAR, {_nab("mp_abl_")} on MiliPoint; full model: 3), change w.r.t.\\ the full model trained with the same seeds in brackets; $^\\dagger$ single run.}}',
        '\\label{tab:ablation}', '\\setlength{\\tabcolsep}{3pt}', '\\resizebox{\\columnwidth}{!}{%', '\\begin{tabular}{lcc}', '\\toprule',
        'Variant & RadHAR & MiliPoint (subj.) \\\\', '\\midrule', *rows, '\\bottomrule', '\\end{tabular}}', '\\end{table}']
 open(f'{OUT}/tab_ablation.tex', 'w').write('\n'.join(tex))
@@ -100,16 +103,14 @@ macros['ablSeeds'] = {1: 'one', 2: 'two', 3: 'three'}.get(len(ab_seeds), str(len
 # ------------------------------------------------------------ transfer table
 G = {g: r for g, r in ((r.group, r) for _, r in agg(df, sorted(set(df.group))).iterrows())}
 def gv(g):
-    return pm(G[g].acc_mean, G[g].acc_std) if g in G else '--'
+    if g not in G: return '--'
+    return pm(G[g].acc_mean, G[g].acc_std) if G[g].n > 1 else f'{G[g].acc_mean:.2f} (n=1)'
 rows = []
 for f, lab in [(0.1, '10\\%'), (0.25, '25\\%'), (1.0, '100\\%')]:
     sc = 'rh_abl_xyz' if f == 1.0 else f'rh_xyz_scratch_f{f}'
     rows.append(f'MiliPoint $\\rightarrow$ RadHAR & {lab} & {gv(sc)} & {gv(f"rh_xyz_mpinit_f{f}")} \\\\')
-rows.append('\\midrule')
-for f, lab in [(0.25, '25\\%'), (1.0, '100\\%')]:
-    sc = 'mp_stpt_lite' if f == 1.0 else f'mp_scratch_f{f}'
-    rows.append(f'RadHAR $\\rightarrow$ MiliPoint & {lab} & {gv(sc)} & {gv(f"mp_rhinit_f{f}")} \\\\')
-tex = ['\\begin{table}[t]', '\\centering', '\\caption{Cross-dataset transfer (STPT-Lite, $xyz$ input): test accuracy (\\%) when fine-tuning on a fraction of target training recordings/runs, from scratch vs.\\ initialised from the model trained on the other dataset (mean\\,$\\pm$\\,std, 3 seeds).}',
+_trn = sorted(set(int(G[g].n) for g in G if 'xyz_' in g or g == 'rh_abl_xyz'))
+tex = ['\\begin{table}[t]', '\\centering', f'\\caption{{Cross-dataset transfer (STPT-Lite, $xyz$ input): test accuracy (\\%) when fine-tuning on a fraction of target training recordings/runs, from scratch vs.\\ initialised from the MiliPoint model (mean\\,$\\pm$\\,std over {"/".join(map(str, _trn))} seeds; n=1 marks a single run). Scratch at 100\\% is the $xyz$-only ablation run.}}',
        '\\label{tab:transfer}', '\\setlength{\\tabcolsep}{3pt}', '\\resizebox{\\columnwidth}{!}{%', '\\begin{tabular}{llcc}', '\\toprule',
        'Direction & Target data & Scratch & Pre-trained \\\\', '\\midrule', *rows, '\\bottomrule', '\\end{tabular}}', '\\end{table}']
 open(f'{OUT}/tab_transfer.tex', 'w').write('\n'.join(tex))
@@ -119,7 +120,7 @@ for g in ['rh_xyz_scratch_f0.1', 'rh_xyz_mpinit_f0.1', 'rh_xyz_scratch_f0.25', '
 
 # ------------------------------------------------------------ protocol table
 rows = []
-for m, lab in [('stpt_lite', 'STPT-Lite'), ('pointnet', 'PointNet'), ('pointnet2', 'PointNet++')]:
+for m, lab in [('stpt_lite', 'STPT-Lite'), ('pointnet', 'PointNet')]:
     rows.append(f'{lab} & {gv("mp_" + m)} & {gv("mpo_official_" + m)} & {gv("mpo_random_" + m)} \\\\')
 tex = ['\\begin{table}[t]', '\\centering', '\\caption{MiliPoint (49 actions) top-1 accuracy (\\%) of the same models under three splits. Published numbers: 34.45 (PointNet++, \\cite{cui2023milipoint}) and 98.25 (MAK-GCN, random 80/10/10, \\cite{zakka2025makgcn}).}',
        '\\label{tab:protocol}', '\\setlength{\\tabcolsep}{3pt}', '\\resizebox{\\columnwidth}{!}{%', '\\begin{tabular}{lccc}', '\\toprule',

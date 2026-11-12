@@ -149,3 +149,60 @@ ALL DONE
 22:13:58 start rh_abl_noattn_s1
 22:18:18 finished rh_abl_noattn_s1 0
 22:18:18 start rh_abl_nomotion_s1
+22:25:49 finished rh_abl_augnojitter_s0 0
+22:25:49 start rh_abl_notemporal_s1
+22:29:28 finished rh_abl_nomotion_s1 0
+TIME BUDGET reached, exiting cleanly
+ALL DONE
+22:33:49 finished rh_abl_notemporal_s1 0
+22:33:49 start rh_abl_xyz_s1
+22:40:59 finished rh_abl_xyz_s1 0
+22:40:59 start rh_abl_nogate_s1
+22:47:49 finished rh_abl_nogate_s1 0
+22:47:49 start rh_abl_augnone_s1
+22:54:59 finished rh_abl_augnone_s1 0
+22:54:59 start rh_abl_augnojitter_s1
+22:59:49 finished rh_abl_augnojitter_s1 0
+22:59:49 start mpo_official_stpt_lite_s0
+23:15:00 finished mpo_official_stpt_lite_s0 0
+23:15:00 start mpo_official_pointnet_s0
+23:22:30 finished mpo_official_pointnet_s0 0
+23:22:30 start mpo_random_stpt_lite_s0
+23:37:10 finished mpo_random_stpt_lite_s0 0
+TIME BUDGET reached, exiting cleanly
+ALL DONE
+00:12:55 start mp_abl_noattn_s0
+00:12:55 start mp_abl_nomotion_s0
+00:17:45 finished mp_abl_noattn_s0 0
+00:17:45 start rh_xyz_scratch_f0.1_s0
+00:19:45 finished rh_xyz_scratch_f0.1_s0 0
+00:19:45 start rh_xyz_scratch_f0.25_s0
+00:22:35 finished rh_xyz_scratch_f0.25_s0 0
+00:22:35 start rh_xyz_mpinit_f0.1_s0
+00:24:25 finished rh_xyz_mpinit_f0.1_s0 0
+00:24:25 start rh_xyz_mpinit_f0.25_s0
+00:27:15 finished rh_xyz_mpinit_f0.25_s0 0
+00:27:15 start rh_xyz_mpinit_f1.0_s0
+00:27:35 finished mp_abl_nomotion_s0 0
+00:27:35 start mp_abl_notemporal_s0
+00:30:25 finished rh_xyz_mpinit_f1.0_s0 0
+00:30:25 start mpo_random_pointnet_s0
+00:38:45 finished mpo_random_pointnet_s0 0
+00:38:45 start rh_xyz_scratch_f0.1_s1
+00:40:35 finished mp_abl_notemporal_s0 0
+00:40:35 finished rh_xyz_scratch_f0.1_s1 0
+00:40:35 start rh_xyz_scratch_f0.25_s1
+00:40:35 start rh_xyz_mpinit_f0.1_s1
+00:42:05 finished rh_xyz_mpinit_f0.1_s1 0
+00:42:05 start rh_xyz_mpinit_f0.25_s1
+00:44:05 finished rh_xyz_scratch_f0.25_s1 0
+00:44:05 start rh_xyz_mpinit_f1.0_s1
+00:44:15 finished rh_xyz_mpinit_f0.25_s1 0
+00:44:15 start mp_abl_noattn_s1
+00:47:55 finished mp_abl_noattn_s1 0
+00:47:55 start mp_abl_nomotion_s1
+00:49:25 finished rh_xyz_mpinit_f1.0_s1 0
+00:49:25 start mp_abl_notemporal_s1
+00:59:55 finished mp_abl_notemporal_s1 0
+01:00:55 finished mp_abl_nomotion_s1 0
+ALL DONE

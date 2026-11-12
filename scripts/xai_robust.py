@@ -82,7 +82,10 @@ def robustness_figures():
           'pointnet_robust': 'PointNet+robust', 'pointnet_lstm': 'PointNet+BiLSTM', 'pointnet2': 'PointNet++',
           'dgcnn': 'DGCNN', 'pointtransformer': 'Point Transformer', 'voxel_tdcnn': 'Voxel TD-CNN', 'stpt_tiny_kd': 'STPT-Tiny+KD'}
     ST = {'stpt_lite_kd_robust': dict(color='#d7301f', lw=2.0), 'stpt_lite_kd': dict(color='#fc8d59', lw=1.4, ls='--'),
-          'pointnet': dict(color='#4292c6', lw=1.2), 'pointnet_robust': dict(color='#4292c6', lw=1.2, ls='--')}
+          'pointnet': dict(color='#4292c6', lw=1.2), 'pointnet_robust': dict(color='#4292c6', lw=1.2, ls='--'),
+          'dgcnn': dict(color='#17becf', lw=0.8, alpha=0.8), 'pointnet2': dict(color='#bcbd22', lw=0.8, alpha=0.8),
+          'pointnet_lstm': dict(color='#2ca02c', lw=0.8, alpha=0.7), 'pointtransformer': dict(color='#e377c2', lw=0.8, alpha=0.8),
+          'voxel_tdcnn': dict(color='#8c564b', lw=0.8, alpha=0.8), 'stpt_tiny_kd': dict(color='#9467bd', lw=0.8, alpha=0.8)}
     summ = []
     for which in ['radhar', 'milipoint']:
         f = f'results/robustness_{which}.csv'
@@ -98,8 +101,9 @@ def robustness_figures():
         fig, ax = plt.subplots(2, 4, figsize=(7.2, 3.6)); ax = ax.ravel()
         for j, c in enumerate(conds):
             for mdl in agg.model.unique():
-                d = agg[(agg.model == mdl) & (agg.condition == c)].sort_values('level', ascending=c in ('sparsity', 'density'))
-                if c in ('sparsity', 'density'): d = d.iloc[::-1]
+                # order points exactly as the tick labels (noise.CONDITIONS level list, mild -> severe)
+                d = agg[(agg.model == mdl) & (agg.condition == c)].set_index('level')
+                d = d.loc[[float(v) for v in noise.CONDITIONS[c][0]]]
                 xs = [0] + list(range(1, len(d) + 1)); ys = [clean[mdl]] + list(d.acc)
                 ax[j].plot(xs, ys, marker='o', ms=2, label=NM[mdl], **ST.get(mdl, dict(lw=0.8, alpha=0.7)))
             lv = noise.CONDITIONS[c][0]
